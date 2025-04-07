@@ -21,27 +21,20 @@ async function analysisFileContent(content) {
 }
 
 async function generateMd(context) {
-  const prompt = `Gere o conteúdo de um arquivo html para a documentação técnica de um projeto.
+  const prompt = `Gere o conteúdo de um arquivo Markdown para a documentação técnica de um projeto.
 As informações estão contidas no seguinte JSON: ${context}. Esse JSON representa a estrutura de um código-fonte em [especificar linguagem, ex: Python], contendo classes, funções e descrições.
 
-O conteúdo do html deve incluir:
+O conteúdo do Markdown deve incluir:
 
-Um sumário com links para cada seção (ex: "Classes", "Funções fora das classes", "Outros conteúdos").
-
-Para cada classe:
-
-Exiba o código-fonte da classe com formatação Markdown adequada (bloco de código).
-
+Um sumário com links para cada seção, o sumário deve ser gerado automaticamente com base no nomes dos arquivos e com subnivel com as estruturas dentro dos arquivos.
+Não adicone comentários no código-fonte, apenas o código-fonte.
+Para cada classe: Exiba o código-fonte da classe com formatação Markdown adequada (bloco de código).
 Crie uma tabela contendo as funções que pertencem à classe. A tabela deve incluir: nome da função, parâmetros e breve descrição.
 
-Para funções que não estão em nenhuma classe:
+Para funções que não estão em nenhuma classe: Mostre o código-fonte de cada função e Inclua uma descrição explicando seu propósito.
 
-Mostre o código-fonte de cada função.
-
-Inclua uma descrição explicando seu propósito.
-
-Se o JSON não contiver classes ou funções, apenas exiba o conteúdo disponível e uma descrição técnica resumida.
-
+Se o JSON não contiver classes ou funções, apenas exiba uma descrição técnica resumida.
+Os códigos-fonte devem ser formatados como blocos de código Markdown e devem estar indentados corretamente.
 O estilo da documentação deve ser claro, técnico e bem estruturado, com uso correto de títulos e formatações Markdown.`;
 
   console.log(prompt)

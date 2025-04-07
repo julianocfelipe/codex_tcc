@@ -58,7 +58,7 @@ fs.readdir(dirPath, async (err, files) => {
         if (allFiles.length > 0) {
             console.log("Arquivos processados:", allFiles);
             const markdown = await gemini.generateMd(JSON.stringify(allFiles));
-            fs.writeFileSync('./teste.mk', markdown);
+            fs.writeFileSync('./teste.mk', markdown.slice(0,-3).slice(12));
         } else {
             console.log("Nenhum arquivo foi processado.");
         }
