@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "axios": "^1.8.4",
+    "commonjs": "^0.0.1",
     "express": "^5.1.0",
     "fs": "^0.0.1-security"
   },
@@ -9,7 +10,9 @@
   "version": "1.0.0",
   "main": "codex.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "ts-node-dev --respawn --transpile-only --project tsconfig.json backend/api.ts",
+    "build": "tsc",
+    "start": "node dist/backend/api.js"
   },
   "keywords": [
     "IA",
