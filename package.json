@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "axios": "^1.8.4",
+    "express": "^5.1.0",
     "fs": "^0.0.1-security"
   },
   "name": "codex",
   "description": "Repositório para o TCC Codex, software para automatização de documentação técnica com IA",
   "version": "1.0.0",
   "main": "codex.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,5 +17,11 @@
     "Automação"
   ],
   "author": "Rafael Castro",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
 }
