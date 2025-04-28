@@ -7,8 +7,10 @@ const port = 3000;
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('API com CommonJS e TypeScript!');
+  res.send('API rodando!!');
 });
+
+
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
