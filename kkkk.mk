@@ -1,51 +1,145 @@
 
 # Documentação Técnica do Projeto DevConnector 2.0
 
-Este documento fornece uma visão geral e documentação técnica do projeto DevConnector 2.0, uma rede social para desenvolvedores construída com a stack MERN (MongoDB, Express, React, Node.js).
+Este documento fornece uma visão geral da arquitetura e implementação do projeto DevConnector 2.0, uma rede social para desenvolvedores.
 
 ## Sumário
 
 *   [Visão Geral](#visão-geral)
+*   [Arquitetura](#arquitetura)
+*   [Configuração](#configuração)
 *   [Estrutura do Projeto](#estrutura-do-projeto)
-*   [Client (Frontend)](#client-frontend)+*
+*   [Detalhes dos Arquivos](#detalhes-dos-arquivos)
+    *   [client/package.json](#clientpackagejson)
+    *   [client/public/index.html](#clientpublicindexhtml)
+    *   [client/public/manifest.json](#clientpublicmanifestjson)
+    *   [client/src/actions/alert.js](#clientsrcactionsalertjs)
+    *   [client/src/actions/auth.js](#clientsrcactionsauthjs)
+    *   [client/src/actions/post.js](#clientsrcactionspostjs)
+    *   [client/src/actions/profile.js](#clientsrcactionsprofilejs)
+    *   [client/src/actions/types.js](#clientsrcactionstypesjs)
+    *   [client/src/App.css](#clientsrcappcss)
+    *   [client/src/App.js](#clientsrcappjs)
+    *   [client/src/components/auth/Login.js](#clientsrccomponentsauthloginjs)
+    *   [client/src/components/auth/Register.js](#clientsrccomponentsauthregisterjs)
+    *   [client/src/components/dashboard/Dashboard.js](#clientsrccomponentsdashboarddashboardjs)
+    *   [client/src/components/dashboard/DashboardActions.js](#clientsrccomponentsdashboarddashboardactionsjs)
+    *   [client/src/components/dashboard/Education.js](#clientsrccomponentsdashboardeducationjs)
+    *   [client/src/components/dashboard/Experience.js](#clientsrccomponentsdashboardexperiencejs)
+    *   [client/src/components/layout/Alert.js](#clientsrccomponentslayoutalertjs)
+    *   [client/src/components/layout/Landing.js](#clientsrccomponentslayoutlandingjs)
+    *   [client/src/components/layout/Navbar.js](#clientsrccomponentslayoutnavbarjs)
+    *   [client/src/components/layout/NotFound.js](#clientsrccomponentslayoutnotfoundjs)
+    *   [client/src/components/layout/Spinner.js](#clientsrccomponentslayoutspinnerjs)
+    *   [client/src/components/post/CommentForm.js](#clientsrccomponentspostcommentformjs)
+    *   [client/src/components/post/CommentItem.js](#clientsrccomponentspostcommentitemjs)
+    *   [client/src/components/post/Post.js](#clientsrccomponentspostpostjs)
+    *   [client/src/components/posts/PostForm.js](#clientsrccomponentspostspostformjs)
+    *   [client/src/components/posts/PostItem.js](#clientsrccomponentspostspostitemjs)
+    *   [client/src/components/posts/Posts.js](#clientsrccomponentspostspostsjs)
+    *   [client/src/components/profile/Profile.js](#clientsrccomponentsprofileprofilejs)
+    *   [client/src/components/profile/ProfileAbout.js](#clientsrccomponentsprofileprofileaboutjs)
+    *   [client/src/components/profile/ProfileEducation.js](#clientsrccomponentsprofileprofileeducationjs)
+    *   [client/src/components/profile/ProfileExperience.js](#clientsrccomponentsprofileprofileexperiencejs)
+    *   [client/src/components/profile/ProfileGithub.js](#clientsrccomponentsprofileprofilegithubjs)
+    *   [client/src/components/profile/ProfileTop.js](#clientsrccomponentsprofileprofiletopjs)
+    *   [client/src/components/profile-forms/AddEducation.js](#clientsrccomponentsprofile-formsaddeducationjs)
+    *   [client/src/components/profile-forms/AddExperience.js](#clientsrccomponentsprofile-formsaddexperiencejs)
+    *   [client/src/components/profile-forms/ProfileForm.js](#clientsrccomponentsprofile-formsprofileformjs)
+    *   [client/src/components/profiles/ProfileItem.js](#clientsrccomponentsprofilesprofileitemjs)
+    *   [client/src/components/profiles/Profiles.js](#clientsrccomponentsprofilesprofilesjs)
+    *   [client/src/components/routing/PrivateRoute.js](#clientsrccomponentsroutingprivateRoutejs)
+    *   [client/src/index.js](#clientsrcindexjs)
+    *   [client/src/reducers/alert.js](#clientsrcreducersalertjs)
+    *   [client/src/reducers/auth.js](#clientsrcreducersauthjs)
+    *   [client/src/reducers/index.js](#clientsrcreducersindexjs)
+    *   [client/src/reducers/post.js](#clientsrcreducerspostjs)
+    *   [client/src/reducers/profile.js](#clientsrcreducersprofilejs)
+    *   [client/src/store.js](#clientsrcstorejs)
+    *   [client/src/utils/api.js](#clientsrcutilsapi.js)
+    *   [client/src/utils/formatDate.js](#clientsrcutilsformatDate.js)
+    *   [client/src/utils/setAuthToken.js](#clientsrcutilssetAuthToken.js)
+    *   [config/db.js](#configdb.js)
+    *   [jsconfig.json](#jsconfigjson)
+    *   [middleware/auth.js](#middlewareauth.js)
+    *   [middleware/checkObjectId.js](#middlewarecheckObjectId.js)
+    *   [models/Post.js](#modelspost.js)
+    *   [models/Profile.js](#modelsprofile.js)
+    *   [models/User.js](#modelsuser.js)
     *   [package.json](#packagejson)
-    *   [public/index.html](#publicindexhtml)
-    *   [public/manifest.json](#publicmanifestjson)
-    *   [src/actions](#srcactions)
-    *   [src/components](#srccomponents)
-    *   [src/App.js](#srcappjs)
-    *   [src/App.css](#srcappcss)
-    *   [src/reducers](#srcreducers)
-    *   [src/utils](#srcutils)
-*   [Server (Backend)](#server-backend)
-    *   [config/db.js](#configdbjs)
-    *   [middleware](#middleware)
-    *   [models](#models)
-    *   [routes/api](#routesapi)
-    *   [server.js](#serverjs)
-*   [Outros Arquivos](#outros-arquivos)
-    *   [package.json (raiz)](#packagejson-raiz)
     *   [README.md](#readmemd)
-*   [Considerações Finais](#considerações-finais)
+    *   [routes/api/auth.js](#routesapiauth.js)
+    *   [routes/api/posts.js](#routesapiposts.js)
+    *   [routes/api/profile.js](#routesapiprofile.js)
+    *   [routes/api/users.js](#routesapiusers.js)
+    *   [server.js](#server.js)
+
+*   [Recursos HTML/CSS (Theme)](#recursos-htmlcsstheme)
+    *   [add-education.html](#add-educationhtml)
+    *   [add-experience.html](#add-experiencehtml)
+    *   [create-profile.html](#create-profilehtml)
+    *   [css/style.css](#cssstylecss)
+    *   [dashboard.html](#dashboardhtml)
+    *   [index.html](#indexhtml)
+    *   [login.html](#loginhtml)
+    *   [post.html](#posthtml)
+    *   [posts.html](#postshtml)
+    *   [profile.html](#profilehtml)
+    *   [profiles.html](#profileshtml)
+    *   [register.html](#registerhtml)
 
 ## Visão Geral
 
-O DevConnector 2.0 é uma plataforma projetada para conectar desenvolvedores, permitindo que eles criem perfis, compartilhem posts e obtenham ajuda de outros membros da comunidade. Este projeto utiliza a stack MERN para oferecer uma solução full-stack robusta e escalável.
+O DevConnector 2.0 é uma aplicação web completa construída utilizando a stack MERN (MongoDB, Express, React, Node.js). Ela permite que desenvolvedores criem perfis, compartilhem posts e interajam com outros membros da comunidade. O projeto foi criado a partir do curso "MERN Stack Front To Back" na Udemy.
+
+## Arquitetura
+
+O projeto segue uma arquitetura de front-end separado do back-end. O front-end, construído com React e Redux, comunica-se com o back-end através de requisições HTTP. O back-end, construído com Node.js, Express e MongoDB, fornece APIs RESTful para manipulação de dados e autenticação.
+
+*   **Front-end (client):**  Responsável pela interface do usuário e interação com o usuário.
+*   **Back-end:** Responsável pela lógica de negócios, acesso a dados e autenticação.
+*   **Banco de Dados (MongoDB):** Utilizado para armazenar dados persistentes.
+
+## Configuração
+
+Para executar o projeto, é necessário configurar o banco de dados MongoDB e as variáveis de ambiente.
+
+1.  **MongoDB:** Instale o MongoDB e crie um banco de dados.
+2.  **Variáveis de Ambiente:** Crie um arquivo `config/default.json` com as seguintes variáveis:
+
+```json
+{
+  "mongoURI": "<sua_uri_mongodb>",
+  "jwtSecret": "<sua_chave_jwt>",
+  "githubToken": "<seu_token_github>"
+}
+```
+
+Substitua `<sua_uri_mongodb>`, `<sua_chave_jwt>`, e `<seu_token_github>` com as informações apropriadas.
 
 ## Estrutura do Projeto
 
-A estrutura do projeto é dividida em duas partes principais:
+A estrutura do projeto é organizada da seguinte forma:
 
-*   **Client:** O frontend da aplicação, construído com React e Redux.
-*   **Server:** O backend da aplicação, construído com Node.js, Express e MongoDB.
+```
+devconnector/
+├── client/          # Código do front-end (React)
+├── config/          # Arquivos de configuração
+├── middleware/      # Middlewares do Express
+├── models/          # Modelos do Mongoose
+├── routes/          # Rotas da API
+├── server.js        # Arquivo principal do servidor
+├── package.json     # Arquivo de dependências do back-end
+└── README.md        # Arquivo de documentação
+```
 
-## Client (Frontend)
+## Detalhes dos Arquivos
 
-A pasta `client` contém todo o código relacionado ao frontend da aplicação.
+Esta seção detalha o propósito e o conteúdo dos principais arquivos do projeto.
 
 ### `client/package.json`
 
-Este arquivo define as dependências e scripts do projeto React.
+Este arquivo contém informações sobre o projeto front-end, incluindo dependências, scripts e configurações.
 
 ```json
 {
@@ -88,16 +182,13 @@ Este arquivo define as dependências e scripts do projeto React.
 }
 ```
 
-**Dependências Notáveis:**
-
-*   `react`, `react-dom`: Biblioteca React para construção da interface do usuário.
-*   `react-redux`, `redux`, `redux-thunk`: Para gerenciamento de estado.
-*   `react-router-dom`: Para roteamento no frontend.
-*   `uuid`: Para gerar IDs únicos (usado para alertas).
+*   **Dependencies:** Lista as bibliotecas e frameworks utilizados no front-end.
+*   **Scripts:** Define comandos para executar o projeto, construir a aplicação e executar testes.
+*   **Proxy:** Configura o proxy para direcionar as requisições da API para o servidor back-end.
 
 ### `client/public/index.html`
 
-Este é o arquivo HTML principal do projeto React. Ele define a estrutura básica da página e carrega o código JavaScript.
+Este é o arquivo HTML principal do projeto front-end.
 
 ```html
 <!DOCTYPE html>
@@ -123,9 +214,13 @@ Este é o arquivo HTML principal do projeto React. Ele define a estrutura básic
 </html>
 ```
 
+*   **Meta Tags:** Define metadados sobre a página HTML.
+*   **Links:**  Importa a biblioteca Font Awesome para ícones e o arquivo `manifest.json` para Progressive Web App (PWA).
+*   **`div#root`:**  É o ponto de montagem para a aplicação React.
+
 ### `client/public/manifest.json`
 
-Este arquivo define metadados sobre a aplicação web, como nome, ícones e tema. Ele é usado para tornar a aplicação instalável como um Progressive Web App (PWA).
+Este arquivo define os metadados para transformar a aplicação em uma PWA.
 
 ```json
 {
@@ -145,195 +240,620 @@ Este arquivo define metadados sobre a aplicação web, como nome, ícones e tema
 }
 ```
 
-### `client/src/actions`
+### `client/src/actions/alert.js`
 
-Esta pasta contém as actions do Redux, responsáveis por disparar eventos que modificam o estado da aplicação.
+Este arquivo define as ações relacionadas aos alertas na aplicação.
 
-*   **`alert.js`:** Lida com a exibição de alertas na interface do usuário.
+```javascript
+import { v4 as uuidv4 } from 'uuid';
+import { SET_ALERT, REMOVE_ALERT } from './types';
 
-    ```javascript
-    import { v4 as uuidv4 } from 'uuid';
-    import { SET_ALERT, REMOVE_ALERT } from './types';
+export const setAlert = (msg, alertType, timeout = 5000) => dispatch => {
+  const id = uuidv4();
+  dispatch({
+    type: SET_ALERT,
+    payload: { msg, alertType, id }
+  });
 
-    export const setAlert = (msg, alertType, timeout = 5000) => dispatch => {
-      const id = uuidv4();
+  setTimeout(() => dispatch({ type: REMOVE_ALERT, payload: id }), timeout);
+};
+```
+
+*   **`setAlert`:** Cria e despacha um alerta para o Redux store.
+    *   `msg`: Mensagem do alerta.
+    *   `alertType`: Tipo do alerta (ex: 'success', 'danger').
+    *   `timeout`: Tempo (em ms) antes do alerta desaparecer.
+
+### `client/src/actions/auth.js`
+
+Este arquivo define as ações relacionadas à autenticação do usuário.
+
+```javascript
+import api from '../utils/api';
+import { setAlert } from './alert';
+import {
+  REGISTER_SUCCESS,
+  REGISTER_FAIL,
+  USER_LOADED,
+  AUTH_ERROR,
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
+  LOGOUT
+} from './types';
+
+// Load User
+export const loadUser = () => async (dispatch) => {
+  try {
+    const res = await api.get('/auth');
+
+    dispatch({
+      type: USER_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR
+    });
+  }
+};
+
+// Register User
+export const register = (formData) => async (dispatch) => {
+  try {
+    const res = await api.post('/users', formData);
+
+    dispatch({
+      type: REGISTER_SUCCESS,
+      payload: res.data
+    });
+    dispatch(loadUser());
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: REGISTER_FAIL
+    });
+  }
+};
+
+// Login User
+export const login = (email, password) => async (dispatch) => {
+  const body = { email, password };
+
+  try {
+    const res = await api.post('/auth', body);
+
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: res.data
+    });
+
+    dispatch(loadUser());
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: LOGIN_FAIL
+    });
+  }
+};
+
+// Logout
+export const logout = () => ({ type: LOGOUT });
+```
+
+*   **`loadUser`:** Carrega as informações do usuário autenticado a partir da API.
+*   **`register`:** Registra um novo usuário na API.
+*   **`login`:** Autentica um usuário existente na API.
+*   **`logout`:** Desloga o usuário, limpando o token e as informações do usuário.
+
+### `client/src/actions/post.js`
+
+Este arquivo define as ações relacionadas aos posts da aplicação.
+
+```javascript
+import api from '../utils/api';
+import { setAlert } from './alert';
+import {
+  GET_POSTS,
+  POST_ERROR,
+  UPDATE_LIKES,
+  DELETE_POST,
+  ADD_POST,
+  GET_POST,
+  ADD_COMMENT,
+  REMOVE_COMMENT
+} from './types';
+
+// Get posts
+export const getPosts = () => async (dispatch) => {
+  try {
+    const res = await api.get('/posts');
+
+    dispatch({
+      type: GET_POSTS,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Add like
+export const addLike = (id) => async (dispatch) => {
+  try {
+    const res = await api.put(`/posts/like/${id}`);
+
+    dispatch({
+      type: UPDATE_LIKES,
+      payload: { id, likes: res.data }
+    });
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Remove like
+export const removeLike = (id) => async (dispatch) => {
+  try {
+    const res = await api.put(`/posts/unlike/${id}`);
+
+    dispatch({
+      type: UPDATE_LIKES,
+      payload: { id, likes: res.data }
+    });
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Delete post
+export const deletePost = (id) => async (dispatch) => {
+  try {
+    await api.delete(`/posts/${id}`);
+
+    dispatch({
+      type: DELETE_POST,
+      payload: id
+    });
+
+    dispatch(setAlert('Post Removed', 'success'));
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Add post
+export const addPost = (formData) => async (dispatch) => {
+  try {
+    const res = await api.post('/posts', formData);
+
+    dispatch({
+      type: ADD_POST,
+      payload: res.data
+    });
+
+    dispatch(setAlert('Post Created', 'success'));
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Get post
+export const getPost = (id) => async (dispatch) => {
+  try {
+    const res = await api.get(`/posts/${id}`);
+
+    dispatch({
+      type: GET_POST,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Add comment
+export const addComment = (postId, formData) => async (dispatch) => {
+  try {
+    const res = await api.post(`/posts/comment/${postId}`, formData);
+
+    dispatch({
+      type: ADD_COMMENT,
+      payload: res.data
+    });
+
+    dispatch(setAlert('Comment Added', 'success'));
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Delete comment
+export const deleteComment = (postId, commentId) => async (dispatch) => {
+  try {
+    await api.delete(`/posts/comment/${postId}/${commentId}`);
+
+    dispatch({
+      type: REMOVE_COMMENT,
+      payload: commentId
+    });
+
+    dispatch(setAlert('Comment Removed', 'success'));
+  } catch (err) {
+    dispatch({
+      type: POST_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+```
+
+*   **`getPosts`:** Busca todos os posts da API.
+*   **`addLike`:** Adiciona um "like" a um post na API.
+*   **`removeLike`:** Remove um "like" de um post na API.
+*   **`deletePost`:** Deleta um post da API.
+*   **`addPost`:** Adiciona um novo post na API.
+*   **`getPost`:** Busca um post específico da API.
+*   **`addComment`:** Adiciona um comentário a um post na API.
+*   **`deleteComment`:** Deleta um comentário de um post na API.
+
+### `client/src/actions/profile.js`
+
+Este arquivo define as ações relacionadas ao perfil do usuário.
+
+```javascript
+import api from '../utils/api';
+import { setAlert } from './alert';
+
+import {
+  GET_PROFILE,
+  GET_PROFILES,
+  PROFILE_ERROR,
+  UPDATE_PROFILE,
+  CLEAR_PROFILE,
+  ACCOUNT_DELETED,
+  GET_REPOS,
+  NO_REPOS
+} from './types';
+
+// Get current users profile
+export const getCurrentProfile = () => async (dispatch) => {
+  try {
+    const res = await api.get('/profile/me');
+
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Get all profiles
+export const getProfiles = () => async (dispatch) => {
+  dispatch({ type: CLEAR_PROFILE });
+
+  try {
+    const res = await api.get('/profile');
+
+    dispatch({
+      type: GET_PROFILES,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Get profile by ID
+export const getProfileById = (userId) => async (dispatch) => {
+  try {
+    const res = await api.get(`/profile/user/${userId}`);
+
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Get Github repos
+export const getGithubRepos = (username) => async (dispatch) => {
+  try {
+    const res = await api.get(`/profile/github/${username}`);
+
+    dispatch({
+      type: GET_REPOS,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: NO_REPOS
+    });
+  }
+};
+
+// Create or update profile
+export const createProfile =
+  (formData, edit = false) =>
+  async (dispatch) => {
+    try {
+      const res = await api.post('/profile', formData);
+
       dispatch({
-        type: SET_ALERT,
-        payload: { msg, alertType, id }
+        type: GET_PROFILE,
+        payload: res.data
       });
 
-      setTimeout(() => dispatch({ type: REMOVE_ALERT, payload: id }), timeout);
-    };
-    ```
+      dispatch(
+        setAlert(edit ? 'Profile Updated' : 'Profile Created', 'success')
+      );
+    } catch (err) {
+      const errors = err.response.data.errors;
 
-    Esta action cria um alerta com uma mensagem, tipo e ID único, e o remove após um tempo limite.
-
-*   **`auth.js`:** Lida com a autenticação do usuário (registro, login, logout).
-
-    ```javascript
-    import api from '../utils/api';
-    import { setAlert } from './alert';
-    import {
-      REGISTER_SUCCESS,
-      REGISTER_FAIL,
-      USER_LOADED,
-      AUTH_ERROR,
-      LOGIN_SUCCESS,
-      LOGIN_FAIL,
-      LOGOUT
-    } from './types';
-
-    // Load User
-    export const loadUser = () => async (dispatch) => {
-      try {
-        const res = await api.get('/auth');
-
-        dispatch({
-          type: USER_LOADED,
-          payload: res.data
-        });
-      } catch (err) {
-        dispatch({
-          type: AUTH_ERROR
-        });
+      if (errors) {
+        errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
       }
-    };
 
-    // Register User
-    export const register = (formData) => async (dispatch) => {
-      try {
-        const res = await api.post('/users', formData);
+      dispatch({
+        type: PROFILE_ERROR,
+        payload: { msg: err.response.statusText, status: err.response.status }
+      });
+    }
+  };
 
-        dispatch({
-          type: REGISTER_SUCCESS,
-          payload: res.data
-        });
-        dispatch(loadUser());
-      } catch (err) {
-        const errors = err.response.data.errors;
+// Add Experience
+export const addExperience = (formData) => async (dispatch) => {
+  try {
+    const res = await api.put('/profile/experience', formData);
 
-        if (errors) {
-          errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
-        }
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data
+    });
 
-        dispatch({
-          type: REGISTER_FAIL
-        });
-      }
-    };
+    dispatch(setAlert('Experience Added', 'success'));
+    return res.data;
+  } catch (err) {
+    const errors = err.response.data.errors;
 
-    // ... (login, logout)
-    ```
+    if (errors) {
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
+    }
 
-    As actions de autenticação interagem com a API do backend para registrar, logar e carregar informações do usuário.
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
 
-*   **`post.js`:** Lida com a criação, leitura, atualização e exclusão de posts.
+// Add Education
+export const addEducation = (formData) => async (dispatch) => {
+  try {
+    const res = await api.put('/profile/education', formData);
 
-    ```javascript
-    import api from '../utils/api';
-    import { setAlert } from './alert';
-    import {
-      GET_POSTS,
-      POST_ERROR,
-      UPDATE_LIKES,
-      DELETE_POST,
-      ADD_POST,
-      GET_POST,
-      ADD_COMMENT,
-      REMOVE_COMMENT
-    } from './types';
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data
+    });
 
-    // Get posts
-    export const getPosts = () => async (dispatch) => {
-      try {
-        const res = await api.get('/posts');
+    dispatch(setAlert('Education Added', 'success'));
+    return res.data;
+  } catch (err) {
+    const errors = err.response.data.errors;
 
-        dispatch({
-          type: GET_POSTS,
-          payload: res.data
-        });
-      } catch (err) {
-        dispatch({
-          type: POST_ERROR,
-          payload: { msg: err.response.statusText, status: err.response.status }
-        });
-      }
-    };
+    if (errors) {
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
+    }
 
-    // ... (addLike, removeLike, deletePost, addPost, getPost, addComment, deleteComment)
-    ```
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
 
-    As actions de postagem interagem com a API do backend para gerenciar as postagens dos usuários, incluindo likes, comentários e exclusão.
+// Delete experience
+export const deleteExperience = (id) => async (dispatch) => {
+  try {
+    const res = await api.delete(`/profile/experience/${id}`);
 
-*   **`profile.js`:** Lida com a criação, leitura, atualização e exclusão de perfis de usuário.
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data
+    });
 
-    ```javascript
-    import api from '../utils/api';
-    import { setAlert } from './alert';
+    dispatch(setAlert('Experience Removed', 'success'));
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
 
-    import {
-      GET_PROFILE,
-      GET_PROFILES,
-      PROFILE_ERROR,
-      UPDATE_PROFILE,
-      CLEAR_PROFILE,
-      ACCOUNT_DELETED,
-      GET_REPOS,
-      NO_REPOS
-    } from './types';
+// Delete education
+export const deleteEducation = (id) => async (dispatch) => {
+  try {
+    const res = await api.delete(`/profile/education/${id}`);
 
-    // Get current users profile
-    export const getCurrentProfile = () => async (dispatch) => {
-      try {
-        const res = await api.get('/profile/me');
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data
+    });
 
-        dispatch({
-          type: GET_PROFILE,
-          payload: res.data
-        });
-      } catch (err) {
-        dispatch({
-          type: PROFILE_ERROR,
-          payload: { msg: err.response.statusText, status: err.response.status }
-        });
-      }
-    };
+    dispatch(setAlert('Education Removed', 'success'));
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
 
-    // ... (getProfiles, getProfileById, getGithubRepos, createProfile, addExperience, addEducation, deleteExperience, deleteEducation, deleteAccount)
-    ```
+// Delete account & profile
+export const deleteAccount = () => async (dispatch) => {
+  if (window.confirm('Are you sure? This can NOT be undone!')) {
+    try {
+      await api.delete('/profile');
 
-    As actions de perfil interagem com a API do backend para gerenciar os perfis dos usuários, incluindo experiências, educação e informações do GitHub.
+      dispatch({ type: CLEAR_PROFILE });
+      dispatch({ type: ACCOUNT_DELETED });
 
-*   **`types.js`:** Define as constantes de tipos de action do Redux.
+      dispatch(setAlert('Your account has been permanently deleted'));
+    } catch (err) {
+      dispatch({
+        type: PROFILE_ERROR,
+        payload: { msg: err.response.statusText, status: err.response.status }
+      });
+    }
+  }
+};
+```
 
-    ```javascript
-    export const SET_ALERT = 'SET_ALERT';
-    export const REMOVE_ALERT = 'REMOVE_ALERT';
-    export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
-    export const REGISTER_FAIL = 'REGISTER_FAIL';
-    export const USER_LOADED = 'USER_LOADED';
-    // ...
-    ```
+*   **`getCurrentProfile`:** Busca o perfil do usuário logado.
+*   **`getProfiles`:** Busca todos os perfis dos usuários.
+*   **`getProfileById`:** Busca um perfil específico pelo ID do usuário.
+*   **`getGithubRepos`:** Busca os repositórios do Github de um usuário.
+*   **`createProfile`:** Cria ou atualiza um perfil.
+*   **`addExperience`:** Adiciona uma experiência ao perfil.
+*   **`addEducation`:** Adiciona uma educação ao perfil.
+*   **`deleteExperience`:** Deleta uma experiência do perfil.
+*   **`deleteEducation`:** Deleta uma educação do perfil.
+*   **`deleteAccount`:** Deleta a conta do usuário e o perfil associado.
 
-    Este arquivo centraliza as strings que representam os tipos de actions, facilitando a manutenção e evitando erros de digitação.
+### `client/src/actions/types.js`
 
-### `client/src/components`
+Este arquivo define as constantes para os tipos de ação do Redux.
 
-Esta pasta contém os componentes React que formam a interface do usuário. A estrutura de pastas geralmente segue a funcionalidade ou página que o componente representa.
+```javascript
+export const SET_ALERT = 'SET_ALERT';
+export const REMOVE_ALERT = 'REMOVE_ALERT';
+export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
+export const REGISTER_FAIL = 'REGISTER_FAIL';
+export const USER_LOADED = 'USER_LOADED';
+export const AUTH_ERROR = 'AUTH_ERROR';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGIN_FAIL = 'LOGIN_FAIL';
+export const LOGOUT = 'LOGOUT';
+export const GET_PROFILE = 'GET_PROFILE';
+export const GET_PROFILES = 'GET_PROFILES';
+export const GET_REPOS = 'GET_REPOS';
+export const NO_REPOS = 'NO_REPOS';
+export const UPDATE_PROFILE = 'UPDATE_PROFILE';
+export const CLEAR_PROFILE = 'CLEAR_PROFILE';
+export const PROFILE_ERROR = 'PROFILE_ERROR';
+export const ACCOUNT_DELETED = 'ACCOUNT_DELETED';
+export const GET_POSTS = 'GET_POSTS';
+export const GET_POST = 'GET_POST';
+export const POST_ERROR = 'POST_ERROR';
+export const UPDATE_LIKES = 'UPDATE_LIKES';
+export const DELETE_POST = 'DELETE_POST';
+export const ADD_POST = 'ADD_POST';
+export const ADD_COMMENT = 'ADD_COMMENT';
+export const REMOVE_COMMENT = 'REMOVE_COMMENT';
+```
 
-**Exemplo:**
+### `client/src/App.css`
 
-*   **`auth`:** Componentes relacionados à autenticação (Login, Register).
-*   **`dashboard`:** Componentes relacionados ao painel do usuário (Dashboard, DashboardActions).
-*   **`layout`:** Componentes de layout (Navbar, Landing, Alert).
-*   **`posts`:** Componentes para exibir e criar posts (PostItem, Posts, PostForm).
-*   **`profile`:** Componentes relacionados a perfis (Profile, ProfileAbout, ProfileExperience).
-*   **`profile-forms`:** Componentes para criar e editar perfis (ProfileForm, AddExperience, AddEducation).
-*   **`routing`:** Componentes para roteamento (PrivateRoute).
+Este arquivo contém os estilos CSS globais da aplicação.
+
+```css
+/* Global Styles */
+:root {
+  --primary-color: #17a2b8;
+  --dark-color: #343a40;
+  --light-color: #f4f4f4;
+  --danger-color: #dc3545;
+  --success-color: #28a745;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Raleway', sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  background-color: #fff;
+  color: #333;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  width: 100%;
+}
+
+/* Utilities */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+  padding: 0 2rem;
+  margin-top: 6rem;
+  margin-bottom: 3rem;
+}
+
+/* ... (rest of the CSS) ... */
+```
 
 ### `client/src/App.js`
 
-Este é o componente raiz da aplicação React. Ele define o roteamento e renderiza os componentes principais.
+Este é o componente raiz da aplicação React. Ele define as rotas e a estrutura da aplicação.
 
 ```javascript
 import React, { useEffect } from 'react';
@@ -406,759 +926,4 @@ const App = () => {
           <Route
             path="add-experience"
             element={<PrivateRoute component={AddExperience} />}
-          />
-          <Route
-            path="add-education"
-            element={<PrivateRoute component={AddEducation} />}
-          />
-          <Route path="posts" element={<PrivateRoute component={Posts} />} />
-          <Route path="posts/:id" element={<PrivateRoute component={Post} />} />
-          <Route path="/*" element={<NotFound />} />
-        </Routes>
-      </Router>
-    </Provider>
-  );
-};
-
-export default App;
-```
-
-**Funcionalidades Chave:**
-
-*   Define as rotas da aplicação usando `react-router-dom`.
-*   Conecta a aplicação ao store do Redux usando `<Provider store={store}>`.
-*   Carrega o usuário ao iniciar a aplicação (`loadUser`).
-*   Configura um listener para o evento `storage` para detectar logout em outras abas.
-
-### `client/src/App.css`
-
-Este arquivo contém os estilos globais da aplicação.
-
-```css
-/* Global Styles */
-:root {
-  --primary-color: #17a2b8;
-  --dark-color: #343a40;
-  --light-color: #f4f4f4;
-  --danger-color: #dc3545;
-  --success-color: #28a745;
-}
-
-/* ... (outros estilos) */
-```
-
-Define variáveis de cores e estilos básicos para a aplicação, utilizando uma abordagem mobile-first com media queries.
-
-### `client/src/reducers`
-
-Esta pasta contém os reducers do Redux, responsáveis por atualizar o estado da aplicação com base nas actions disparadas.
-
-*   **`alert.js`:** Lida com o estado dos alertas.
-
-    ```javascript
-    import { SET_ALERT, REMOVE_ALERT } from '../actions/types';
-
-    const initialState = [];
-
-    function alertReducer(state = initialState, action) {
-      const { type, payload } = action;
-
-      switch (type) {
-        case SET_ALERT:
-          return [...state, payload];
-        case REMOVE_ALERT:
-          return state.filter((alert) => alert.id !== payload);
-        default:
-          return state;
-      }
-    }
-
-    export default alertReducer;
-    ```
-
-    Adiciona e remove alertas do estado.
-
-*   **`auth.js`:** Lida com o estado de autenticação do usuário.
-
-    ```javascript
-    import {
-      REGISTER_SUCCESS,
-      //REGISTER_FAIL,
-      USER_LOADED,
-      AUTH_ERROR,
-      LOGIN_SUCCESS,
-      //LOGIN_FAIL,
-      LOGOUT,
-      ACCOUNT_DELETED
-    } from '../actions/types';
-
-    const initialState = {
-      token: localStorage.getItem('token'),
-      isAuthenticated: null,
-      loading: true,
-      user: null
-    };
-
-    function authReducer(state = initialState, action) {
-      const { type, payload } = action;
-
-      switch (type) {
-        case USER_LOADED:
-          return {
-            ...state,
-            isAuthenticated: true,
-            loading: false,
-            user: payload
-          };
-        case REGISTER_SUCCESS:
-        case LOGIN_SUCCESS:
-          return {
-            ...state,
-            ...payload,
-            isAuthenticated: true,
-            loading: false
-          };
-        case ACCOUNT_DELETED:
-        case AUTH_ERROR:
-        case LOGOUT:
-          return {
-            ...state,
-            token: null,
-            isAuthenticated: false,
-            loading: false,
-            user: null
-          };
-        default:
-          return state;
-      }
-    }
-
-    export default authReducer;
-    ```
-
-    Atualiza o estado com base nas actions de autenticação, como login, registro, carregamento do usuário e logout.
-
-*   **`profile.js`:** Lida com o estado do perfil do usuário.
-
-    ```javascript
-    import {
-      GET_PROFILE,
-      PROFILE_ERROR,
-      CLEAR_PROFILE,
-      UPDATE_PROFILE,
-      GET_PROFILES,
-      GET_REPOS,
-      NO_REPOS
-    } from '../actions/types';
-
-    const initialState = {
-      profile: null,
-      profiles: [],
-      repos: [],
-      loading: true,
-      error: {}
-    };
-
-    function profileReducer(state = initialState, action) {
-      const { type, payload } = action;
-
-      switch (type) {
-        case GET_PROFILE:
-        case UPDATE_PROFILE:
-          return {
-            ...state,
-            profile: payload,
-            loading: false
-          };
-        case GET_PROFILES:
-          return {
-            ...state,
-            profiles: payload,
-            loading: false
-          };
-        case PROFILE_ERROR:
-          return {
-            ...state,
-            error: payload,
-            loading: false,
-            profile: null
-          };
-        case CLEAR_PROFILE:
-          return {
-            ...state,
-            profile: null,
-            repos: []
-          };
-        case GET_REPOS:
-          return {
-            ...state,
-            repos: payload,
-            loading: false
-          };
-        case NO_REPOS:
-          return {
-            ...state,
-            repos: []
-          };
-        default:
-          return state;
-      }
-    }
-
-    export default profileReducer;
-    ```
-
-    Gerencia o estado do perfil do usuário, incluindo informações do perfil, repositórios do GitHub e erros.
-
-*   **`post.js`:** Lida com o estado dos posts.
-
-     ```javascript
-    import {
-      GET_POSTS,
-      POST_ERROR,
-      UPDATE_LIKES,
-      DELETE_POST,
-      ADD_POST,
-      GET_POST,
-      ADD_COMMENT,
-      REMOVE_COMMENT
-    } from '../actions/types';
-
-    const initialState = {
-      posts: [],
-      post: null,
-      loading: true,
-      error: {}
-    };
-
-    function postReducer(state = initialState, action) {
-      const { type, payload } = action;
-
-      switch (type) {
-        case GET_POSTS:
-          return {
-            ...state,
-            posts: payload,
-            loading: false
-          };
-        case GET_POST:
-          return {
-            ...state,
-            post: payload,
-            loading: false
-          };
-        case ADD_POST:
-          return {
-            ...state,
-            posts: [payload, ...state.posts],
-            loading: false
-          };
-        case DELETE_POST:
-          return {
-            ...state,
-            posts: state.posts.filter((post) => post._id !== payload),
-            loading: false
-          };
-        case POST_ERROR:
-          return {
-            ...state,
-            error: payload,
-            loading: false
-          };
-        case UPDATE_LIKES:
-          return {
-            ...state,
-            posts: state.posts.map((post) =>
-              post._id === payload.id ? { ...post, likes: payload.likes } : post
-            ),
-            loading: false
-          };
-        case ADD_COMMENT:
-          return {
-            ...state,
-            post: { ...state.post, comments: payload },
-            loading: false
-          };
-        case REMOVE_COMMENT:
-          return {
-            ...state,
-            post: {
-              ...state.post,
-              comments: state.post.comments.filter(
-                (comment) => comment._id !== payload
-              )
-            },
-            loading: false
-          };
-        default:
-          return state;
-      }
-    }
-
-    export default postReducer;
-    ```
-
-    Gerencia o estado das postagens, incluindo a lista de postagens, a postagem atual, comentários e erros.
-
-*   **`index.js`:** Combina todos os reducers em um único reducer raiz.
-
-    ```javascript
-    import { combineReducers } from 'redux';
-    import alert from './alert';
-    import auth from './auth';
-    import profile from './profile';
-    import post from './post';
-
-    export default combineReducers({
-      alert,
-      auth,
-      profile,
-      post
-    });
-    ```
-
-    Utiliza a função `combineReducers` do Redux para combinar todos os reducers em um único objeto, que é exportado como o reducer raiz da aplicação.
-
-### `client/src/utils`
-
-Esta pasta contém utilitários usados em toda a aplicação.
-
-*   **`api.js`:** Configura uma instância do Axios para fazer requisições à API do backend. Inclui um interceptor para lidar com erros de autenticação (token expirado).
-
-    ```javascript
-    import axios from 'axios';
-    import store from '../store';
-    import { LOGOUT } from '../actions/types';
-
-    // Create an instance of axios
-    const api = axios.create({
-      baseURL: '/api',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    /*
-      NOTE: intercept any error responses from the api
-    and check if the token is no longer valid.
-    ie. Token has expired or user is no longer
-    authenticated.
-    logout the user if the token has expired
-    */
-
-    api.interceptors.response.use(
-      (res) => res,
-      (err) => {
-        if (err.response.status === 401) {
-          store.dispatch({ type: LOGOUT });
-        }
-        return Promise.reject(err);
-      }
-    );
-
-    export default api;
-    ```
-*   **`formatDate.js`:** Formata datas para exibição.
-    ```javascript
-    function formatDate(date) {
-    return new Intl.DateTimeFormat().format(new Date(date));
-    }
-
-    export default formatDate;
-    ```
-
-*   **`setAuthToken.js`:** Define o token de autenticação no cabeçalho das requisições Axios e no localStorage.
-
-    ```javascript
-    import api from './api';
-
-    // store our JWT in LS and set axios headers if we do have a token
-
-    const setAuthToken = (token) => {
-      if (token) {
-        api.defaults.headers.common['x-auth-token'] = token;
-        localStorage.setItem('token', token);
-      } else {
-        delete api.defaults.headers.common['x-auth-token'];
-        localStorage.removeItem('token');
-      }
-    };
-
-    export default setAuthToken;
-    ```
-
-## Server (Backend)
-
-A raiz do projeto contém todo o código relacionado ao backend da aplicação.
-
-### `config/db.js`
-
-Este arquivo configura a conexão com o banco de dados MongoDB.
-
-```javascript
-const mongoose = require('mongoose');
-const config = require('config');
-const db = config.get('mongoURI');
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect(db, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-      useUnifiedTopology: true
-    });
-
-    console.log('MongoDB Connected...');
-  } catch (err) {
-    console.error(err.message);
-    // Exit process with failure
-    process.exit(1);
-  }
-};
-
-module.exports = connectDB;
-```
-
-### `middleware`
-
-Esta pasta contém middlewares utilizados nas rotas da API.
-
-*   **`auth.js`:** Middleware para autenticação de rotas protegidas.
-
-    ```javascript
-    const jwt = require('jsonwebtoken');
-    const config = require('config');
-
-    module.exports = function (req, res, next) {
-      // Get token from header
-      const token = req.header('x-auth-token');
-
-      // Check if not token
-      if (!token) {
-        return res.status(401).json({ msg: 'No token, authorization denied' });
-      }
-
-      // Verify token
-      try {
-        jwt.verify(token, config.get('jwtSecret'), (error, decoded) => {
-          if (error) {
-            return res.status(401).json({ msg: 'Token is not valid' });
-          } else {
-            req.user = decoded.user;
-            next();
-          }
-        });
-      } catch (err) {
-        console.error('something wrong with auth middleware');
-        res.status(500).json({ msg: 'Server Error' });
-      }
-    };
-    ```
-
-    Verifica se o token JWT é válido e adiciona as informações do usuário ao objeto de requisição.
-
-*   **`checkObjectId.js`:** Middleware para validar IDs de objetos MongoDB.
-
-    ```javascript
-    const mongoose = require('mongoose');
-    // middleware to check for a valid object id
-    const checkObjectId = (idToCheck) => (req, res, next) => {
-      if (!mongoose.Types.ObjectId.isValid(req.params[idToCheck]))
-        return res.status(400).json({ msg: 'Invalid ID' });
-      next();
-    };
-
-    module.exports = checkObjectId;
-    ```
-
-    Garante que o ID fornecido como parâmetro na rota é um ID de objeto MongoDB válido.
-
-### `models`
-
-Esta pasta contém os modelos de dados do MongoDB.
-
-*   **`Post.js`:** Define o modelo para posts.
-
-    ```javascript
-    const mongoose = require('mongoose');
-    const Schema = mongoose.Schema;
-
-    const PostSchema = new Schema({
-      user: {
-        type: Schema.Types.ObjectId
-      },
-      text: {
-        type: String,
-        required: true
-      },
-      name: {
-        type: String
-      },
-      avatar: {
-        type: String
-      },
-      likes: [
-        {
-          user: {
-            type: Schema.Types.ObjectId
-          }
-        }
-      ],
-      comments: [
-        {
-          user: {
-            type: Schema.Types.ObjectId
-          },
-          text: {
-            type: String,
-            required: true
-          },
-          name: {
-            type: String
-          },
-          avatar: {
-            type: String
-          },
-          date: {
-            type: Date,
-            default: Date.now
-          }
-        }
-      ],
-      date: {
-        type: Date,
-        default: Date.now
-      }
-    });
-
-    module.exports = mongoose.model('post', PostSchema);
-    ```
-
-*   **`Profile.js`:** Define o modelo para perfis de usuário.
-
-    ```javascript
-    const mongoose = require('mongoose');
-
-    const ProfileSchema = new mongoose.Schema({
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
-      },
-      company: {
-        type: String
-      },
-      website: {
-        type: String
-      },
-      location: {
-        type: String
-      },
-      status: {
-        type: String,
-        required: true
-      },
-      skills: {
-        type: [String],
-        required: true
-      },
-      bio: {
-        type: String
-      },
-      githubusername: {
-        type: String
-      },
-      experience: [
-        {
-          title: {
-            type: String,
-            required: true
-          },
-          company: {
-            type: String,
-            required: true
-          },
-          location: {
-            type: String
-          },
-          from: {
-            type: Date,
-            required: true
-          },
-          to: {
-            type: Date
-          },
-          current: {
-            type: Boolean,
-            default: false
-          },
-          description: {
-            type: String
-          }
-        }
-      ],
-      education: [
-        {
-          school: {
-            type: String,
-            required: true
-          },
-          degree: {
-            type: String,
-            required: true
-          },
-          fieldofstudy: {
-            type: String,
-            required: true
-          },
-          from: {
-            type: Date,
-            required: true
-          },
-          to: {
-            type: Date
-          },
-          current: {
-            type: Boolean,
-            default: false
-          },
-          description: {
-            type: String
-          }
-        }
-      ],
-      social: {
-        youtube: {
-          type: String
-        },
-        twitter: {
-          type: String
-        },
-        facebook: {
-          type: String
-        },
-        linkedin: {
-          type: String
-        },
-        instagram: {
-          type: String
-        }
-      },
-      date: {
-        type: Date,
-        default: Date.now
-      }
-    });
-
-    module.exports = mongoose.model('profile', ProfileSchema);
-    ```
-
-*   **`User.js`:** Define o modelo para usuários.
-
-    ```javascript
-    const mongoose = require('mongoose');
-
-    const UserSchema = new mongoose.Schema({
-      name: {
-        type: String,
-        required: true
-      },
-      email: {
-        type: String,
-        required: true,
-        unique: true
-      },
-      password: {
-        type: String,
-        required: true
-      },
-      avatar: {
-        type: String
-      },
-      date: {
-        type: Date,
-        default: Date.now
-      }
-    });
-
-    module.exports = mongoose.model('user', UserSchema);
-    ```
-
-### `routes/api`
-
-Esta pasta contém as rotas da API.
-
-*   **`auth.js`:** Rotas para autenticação (login, obter usuário).
-
-    ```javascript
-    const express = require('express');
-    const router = express.Router();
-    const bcrypt = require('bcryptjs');
-    const auth = require('../../middleware/auth');
-    const jwt = require('jsonwebtoken');
-    const config = require('config');
-    const { check, validationResult } = require('express-validator');
-
-    const User = require('../../models/User');
-
-    // @route    GET api/auth
-    // @desc     Get user by token
-    // @access   Private
-    router.get('/', auth, async (req, res) => {
-      try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
-      } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-      }
-    });
-
-    // @route    POST api/auth
-    // @desc     Authenticate user & get token
-    // @access   Public
-    router.post(
-      '/',
-      check('email', 'Please include a valid email').isEmail(),
-      check('password', 'Password is required').exists(),
-      async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(400).json({ errors: errors.array() });
-        }
-
-        const { email, password } = req.body;
-
-        try {
-          let user = await User.findOne({ email });
-
-          if (!user) {
-            return res
-              .status(400)
-              .json({ errors: [{ msg: 'Invalid Credentials' }] });
-          }
-
-          const isMatch = await bcrypt.compare(password, user.password);
-
-          if (!isMatch) {
-            return res
-              .status(400)
-              .json({ errors: [{ msg: 'Invalid Credentials' }] });
-          }
-
-          const payload = {
-            user: {
-              id: user.id
-            }
-          };
-
-          jwt.sign(
-            payload,
-            config.get('jwtSecret'),
-            { expiresIn: '5 days' },
-            (err, token) => {
-              if (err) throw err;
-              res.json({ token });
-            }
-          );
-        } catch (err) {
-          console.error(err.
+          

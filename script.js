@@ -47,7 +47,7 @@ function readFilesRecursive(dirPath) {
 // Exemplo de uso:
 const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\devconnector_2.0-master'; 
 //const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\projeto-integrador-ia-main'
-
+//const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\mattermost-master';
 const arquivos = readFilesRecursive(caminhoDaPasta);
 console.log(JSON.stringify(arquivos, null, 2));
 
@@ -55,3 +55,4 @@ console.log(JSON.stringify(arquivos, null, 2));
   fs.writeFileSync('./kkkk.mk', conteudoMK.replace('```markdown', ''));
   console.log('Arquivo gerado com sucesso!');
 
+  export { readFilesRecursive };
