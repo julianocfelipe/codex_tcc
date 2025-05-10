@@ -1,145 +1,122 @@
 
 # Documentação Técnica do Projeto DevConnector 2.0
 
-Este documento fornece uma visão geral da arquitetura e implementação do projeto DevConnector 2.0, uma rede social para desenvolvedores.
+Este documento fornece uma visão geral da arquitetura e implementação do projeto DevConnector 2.0, uma rede social para desenvolvedores.  Ele cobre a estrutura do projeto, os principais componentes e arquivos, e o fluxo de dados.
 
 ## Sumário
 
-*   [Visão Geral](#visão-geral)
-*   [Arquitetura](#arquitetura)
-*   [Configuração](#configuração)
 *   [Estrutura do Projeto](#estrutura-do-projeto)
-*   [Detalhes dos Arquivos](#detalhes-dos-arquivos)
-    *   [client/package.json](#clientpackagejson)
-    *   [client/public/index.html](#clientpublicindexhtml)
-    *   [client/public/manifest.json](#clientpublicmanifestjson)
-    *   [client/src/actions/alert.js](#clientsrcactionsalertjs)
-    *   [client/src/actions/auth.js](#clientsrcactionsauthjs)
-    *   [client/src/actions/post.js](#clientsrcactionspostjs)
-    *   [client/src/actions/profile.js](#clientsrcactionsprofilejs)
-    *   [client/src/actions/types.js](#clientsrcactionstypesjs)
-    *   [client/src/App.css](#clientsrcappcss)
-    *   [client/src/App.js](#clientsrcappjs)
-    *   [client/src/components/auth/Login.js](#clientsrccomponentsauthloginjs)
-    *   [client/src/components/auth/Register.js](#clientsrccomponentsauthregisterjs)
-    *   [client/src/components/dashboard/Dashboard.js](#clientsrccomponentsdashboarddashboardjs)
-    *   [client/src/components/dashboard/DashboardActions.js](#clientsrccomponentsdashboarddashboardactionsjs)
-    *   [client/src/components/dashboard/Education.js](#clientsrccomponentsdashboardeducationjs)
-    *   [client/src/components/dashboard/Experience.js](#clientsrccomponentsdashboardexperiencejs)
-    *   [client/src/components/layout/Alert.js](#clientsrccomponentslayoutalertjs)
-    *   [client/src/components/layout/Landing.js](#clientsrccomponentslayoutlandingjs)
-    *   [client/src/components/layout/Navbar.js](#clientsrccomponentslayoutnavbarjs)
-    *   [client/src/components/layout/NotFound.js](#clientsrccomponentslayoutnotfoundjs)
-    *   [client/src/components/layout/Spinner.js](#clientsrccomponentslayoutspinnerjs)
-    *   [client/src/components/post/CommentForm.js](#clientsrccomponentspostcommentformjs)
-    *   [client/src/components/post/CommentItem.js](#clientsrccomponentspostcommentitemjs)
-    *   [client/src/components/post/Post.js](#clientsrccomponentspostpostjs)
-    *   [client/src/components/posts/PostForm.js](#clientsrccomponentspostspostformjs)
-    *   [client/src/components/posts/PostItem.js](#clientsrccomponentspostspostitemjs)
-    *   [client/src/components/posts/Posts.js](#clientsrccomponentspostspostsjs)
-    *   [client/src/components/profile/Profile.js](#clientsrccomponentsprofileprofilejs)
-    *   [client/src/components/profile/ProfileAbout.js](#clientsrccomponentsprofileprofileaboutjs)
-    *   [client/src/components/profile/ProfileEducation.js](#clientsrccomponentsprofileprofileeducationjs)
-    *   [client/src/components/profile/ProfileExperience.js](#clientsrccomponentsprofileprofileexperiencejs)
-    *   [client/src/components/profile/ProfileGithub.js](#clientsrccomponentsprofileprofilegithubjs)
-    *   [client/src/components/profile/ProfileTop.js](#clientsrccomponentsprofileprofiletopjs)
-    *   [client/src/components/profile-forms/AddEducation.js](#clientsrccomponentsprofile-formsaddeducationjs)
-    *   [client/src/components/profile-forms/AddExperience.js](#clientsrccomponentsprofile-formsaddexperiencejs)
-    *   [client/src/components/profile-forms/ProfileForm.js](#clientsrccomponentsprofile-formsprofileformjs)
-    *   [client/src/components/profiles/ProfileItem.js](#clientsrccomponentsprofilesprofileitemjs)
-    *   [client/src/components/profiles/Profiles.js](#clientsrccomponentsprofilesprofilesjs)
-    *   [client/src/components/routing/PrivateRoute.js](#clientsrccomponentsroutingprivateRoutejs)
-    *   [client/src/index.js](#clientsrcindexjs)
-    *   [client/src/reducers/alert.js](#clientsrcreducersalertjs)
-    *   [client/src/reducers/auth.js](#clientsrcreducersauthjs)
-    *   [client/src/reducers/index.js](#clientsrcreducersindexjs)
-    *   [client/src/reducers/post.js](#clientsrcreducerspostjs)
-    *   [client/src/reducers/profile.js](#clientsrcreducersprofilejs)
-    *   [client/src/store.js](#clientsrcstorejs)
-    *   [client/src/utils/api.js](#clientsrcutilsapi.js)
-    *   [client/src/utils/formatDate.js](#clientsrcutilsformatDate.js)
-    *   [client/src/utils/setAuthToken.js](#clientsrcutilssetAuthToken.js)
-    *   [config/db.js](#configdb.js)
+*   [Client](#client)
+    *   [package.json](#clientpackagejson)
+    *   [public/index.html](#clientpublicindexhtml)
+    *   [public/manifest.json](#clientpublicmanifestjson)
+    *   [src/actions](#srcactions)
+        *   [alert.js](#srcactionsalertjs)
+        *   [auth.js](#srcactionsauthjs)
+        *   [post.js](#srcactionspostjs)
+        *   [profile.js](#srcactionsprofilejs)
+        *   [types.js](#srcactionstypesjs)
+    *   [src/App.js](#srcappjs)
+    *   [src/App.css](#srcappcss)
+    *   [src/components](#srccomponents)
+        *   [auth](#srccomponentsauth)
+            *   [Login.js](#srccomponentsauthloginjs)
+            *   [Register.js](#srccomponentsauthregisterjs)
+        *   [dashboard](#srccomponentsdashboard)
+            *   [Dashboard.js](#srccomponentsdashboarddashboardjs)
+            *   [DashboardActions.js](#srccomponentsdashboarddashboardactionsjs)
+            *   [Education.js](#srccomponentsdashboardeducationjs)
+            *   [Experience.js](#srccomponentsdashboardexperiencejs)
+        *   [layout](#srccomponentslayout)
+            *   [Alert.js](#srccomponentslayoutalertjs)
+            *   [Landing.js](#srccomponentslayoutlandingjs)
+            *   [Navbar.js](#srccomponentslayoutnavbarjs)
+            *   [NotFound.js](#srccomponentslayoutnotfoundjs)
+            *   [Spinner.js](#srccomponentslayoutspinnerjs)
+        *   [post](#srccomponentspost)
+            *   [CommentForm.js](#srccomponentspostcommentformjs)
+            *   [CommentItem.js](#srccomponentspostcommentitemjs)
+            *   [Post.js](#srccomponentspostpostjs)
+        *   [posts](#srccomponentsposts)
+            *   [PostForm.js](#srccomponentspostspostformjs)
+            *   [PostItem.js](#srccomponentspostspostitemjs)
+            *   [Posts.js](#srccomponentspostspostsjs)
+        *   [profile](#srccomponentsprofile)
+            *   [Profile.js](#srccomponentsprofileprofilejs)
+            *   [ProfileAbout.js](#srccomponentsprofileprofileaboutjs)
+            *   [ProfileEducation.js](#srccomponentsprofileprofileeducationjs)
+            *   [ProfileExperience.js](#srccomponentsprofileprofileexperiencejs)
+            *   [ProfileGithub.js](#srccomponentsprofileprofilegithubjs)
+            *   [ProfileTop.js](#srccomponentsprofileprofiletopjs)
+        *   [profile-forms](#srccomponentsprofile-forms)
+            *   [AddEducation.js](#srccomponentsprofile-formsaddeducationjs)
+            *   [AddExperience.js](#srccomponentsprofile-formsaddexperiencejs)
+            *   [ProfileForm.js](#srccomponentsprofile-formsprofileformjs)
+        *   [profiles](#srccomponentsprofiles)
+            *   [ProfileItem.js](#srccomponentsprofilesprofileitemjs)
+            *   [Profiles.js](#srccomponentsprofilesprofilesjs)
+        *   [routing](#srccomponentsrouting)
+            *   [PrivateRoute.js](#srccomponentsroutingprivateRoutejs)
+    *   [src/index.js](#srcindexjs)
+    *   [src/reducers](#srcreducers)
+        *   [alert.js](#srcreducersalertjs)
+        *   [auth.js](#srcreducersauthjs)
+        *   [index.js](#srcreducersindexjs)
+        *   [post.js](#srcreducerspostjs)
+        *   [profile.js](#srcreducersprofilejs)
+    *   [src/store.js](#srcstorejs)
+    *   [src/utils](#srcutils)
+        *   [api.js](#srcutilsapijs)
+        *   [formatDate.js](#srcutilsformatDatejs)
+        *   [setAuthToken.js](#srcutilssetAuthTokenjs)
+*   [Backend](#backend)
+    *   [config/db.js](#configdbjs)
     *   [jsconfig.json](#jsconfigjson)
-    *   [middleware/auth.js](#middlewareauth.js)
-    *   [middleware/checkObjectId.js](#middlewarecheckObjectId.js)
-    *   [models/Post.js](#modelspost.js)
-    *   [models/Profile.js](#modelsprofile.js)
-    *   [models/User.js](#modelsuser.js)
+    *   [middleware](#middleware)
+        *   [auth.js](#middlewareauthjs)
+        *   [checkObjectId.js](#middlewarecheckobjectidjs)
+    *   [models](#models)
+        *   [Post.js](#modelspostjs)
+        *   [Profile.js](#modelsprofilejs)
+        *   [User.js](#modelsuserjs)
     *   [package.json](#packagejson)
     *   [README.md](#readmemd)
-    *   [routes/api/auth.js](#routesapiauth.js)
-    *   [routes/api/posts.js](#routesapiposts.js)
-    *   [routes/api/profile.js](#routesapiprofile.js)
-    *   [routes/api/users.js](#routesapiusers.js)
-    *   [server.js](#server.js)
-
-*   [Recursos HTML/CSS (Theme)](#recursos-htmlcsstheme)
-    *   [add-education.html](#add-educationhtml)
-    *   [add-experience.html](#add-experiencehtml)
-    *   [create-profile.html](#create-profilehtml)
-    *   [css/style.css](#cssstylecss)
-    *   [dashboard.html](#dashboardhtml)
-    *   [index.html](#indexhtml)
-    *   [login.html](#loginhtml)
-    *   [post.html](#posthtml)
-    *   [posts.html](#postshtml)
-    *   [profile.html](#profilehtml)
-    *   [profiles.html](#profileshtml)
-    *   [register.html](#registerhtml)
-
-## Visão Geral
-
-O DevConnector 2.0 é uma aplicação web completa construída utilizando a stack MERN (MongoDB, Express, React, Node.js). Ela permite que desenvolvedores criem perfis, compartilhem posts e interajam com outros membros da comunidade. O projeto foi criado a partir do curso "MERN Stack Front To Back" na Udemy.
-
-## Arquitetura
-
-O projeto segue uma arquitetura de front-end separado do back-end. O front-end, construído com React e Redux, comunica-se com o back-end através de requisições HTTP. O back-end, construído com Node.js, Express e MongoDB, fornece APIs RESTful para manipulação de dados e autenticação.
-
-*   **Front-end (client):**  Responsável pela interface do usuário e interação com o usuário.
-*   **Back-end:** Responsável pela lógica de negócios, acesso a dados e autenticação.
-*   **Banco de Dados (MongoDB):** Utilizado para armazenar dados persistentes.
-
-## Configuração
-
-Para executar o projeto, é necessário configurar o banco de dados MongoDB e as variáveis de ambiente.
-
-1.  **MongoDB:** Instale o MongoDB e crie um banco de dados.
-2.  **Variáveis de Ambiente:** Crie um arquivo `config/default.json` com as seguintes variáveis:
-
-```json
-{
-  "mongoURI": "<sua_uri_mongodb>",
-  "jwtSecret": "<sua_chave_jwt>",
-  "githubToken": "<seu_token_github>"
-}
-```
-
-Substitua `<sua_uri_mongodb>`, `<sua_chave_jwt>`, e `<seu_token_github>` com as informações apropriadas.
+    *   [routes/api](#routesapi)
+        *   [auth.js](#routesapiauthjs)
+        *   [posts.js](#routesapipostsjs)
+        *   [profile.js](#routesapiprofilejs)
+        *   [users.js](#routesapiusersjs)
+    *   [server.js](#serverjs)
+*   [_resources/html\_css\_theme](#_resourceshtml_css_theme)
+    *   [add-education.html](#_resourceshtml_css_themeadd-educationhtml)
+    *   [add-experience.html](#_resourceshtml_css_themeadd-experiencehtml-1)
+    *   [create-profile.html](#_resourceshtml_css_themecreate-profilehtml)
+    *   [css/style.css](#_resourceshtml_css_themecssstylecss)
+    *   [dashboard.html](#_resourceshtml_css_themedashboardhtml)
+    *   [index.html](#_resourceshtml_css_themeindexhtml)
+    *   [login.html](#_resourceshtml_css_themeloginhtml)
+    *   [post.html](#_resourceshtml_css_themeposthtml)
+    *   [posts.html](#_resourceshtml_css_themepostshtml)
+    *   [profile.html](#_resourceshtml_css_themeprofilehtml)
+    *   [profiles.html](#_resourceshtml_css_themeprofileshtml)
+    *   [register.html](#_resourceshtml_css_themeregisterhtml)
 
 ## Estrutura do Projeto
 
-A estrutura do projeto é organizada da seguinte forma:
+O projeto segue uma arquitetura MERN (MongoDB, Express, React, Node.js):
 
-```
-devconnector/
-├── client/          # Código do front-end (React)
-├── config/          # Arquivos de configuração
-├── middleware/      # Middlewares do Express
-├── models/          # Modelos do Mongoose
-├── routes/          # Rotas da API
-├── server.js        # Arquivo principal do servidor
-├── package.json     # Arquivo de dependências do back-end
-└── README.md        # Arquivo de documentação
-```
+*   **client:** Contém o código frontend React.
+*   **config:** Contém arquivos de configuração, como a string de conexão ao banco de dados.
+*   **middleware:** Contém funções middleware para autenticação e validação.
+*   **models:** Define os esquemas de dados para o MongoDB.
+*   **routes:** Define as rotas da API para o backend.
+*   **server.js:** O ponto de entrada do servidor Node.js.
 
-## Detalhes dos Arquivos
+## Client
 
-Esta seção detalha o propósito e o conteúdo dos principais arquivos do projeto.
+### client\package.json
 
-### `client/package.json`
-
-Este arquivo contém informações sobre o projeto front-end, incluindo dependências, scripts e configurações.
+Este arquivo define as dependências, scripts e informações gerais sobre o frontend do projeto.
 
 ```json
 {
@@ -182,13 +159,24 @@ Este arquivo contém informações sobre o projeto front-end, incluindo dependê
 }
 ```
 
-*   **Dependencies:** Lista as bibliotecas e frameworks utilizados no front-end.
-*   **Scripts:** Define comandos para executar o projeto, construir a aplicação e executar testes.
-*   **Proxy:** Configura o proxy para direcionar as requisições da API para o servidor back-end.
+**Principais Dependências:**
 
-### `client/public/index.html`
+*   **react:** A biblioteca principal do React.
+*   **react-dom:** Fornece métodos específicos do DOM que são usados no nível superior para ativar seu modelo React.
+*   **react-redux:** Integração do Redux com o React.
+*   **react-router-dom:** Roteamento para aplicações React.
+*   **redux:** Gerenciamento de estado para o frontend.
+*   **redux-thunk:** Middleware para Redux que permite escrever action creators que retornam uma função em vez de uma ação.
 
-Este é o arquivo HTML principal do projeto front-end.
+**Scripts:**
+
+*   **start:** Inicia o servidor de desenvolvimento.
+*   **build:** Constrói a aplicação para produção.
+*   **test:** Executa os testes.
+
+### client\public\index.html
+
+Este é o arquivo HTML principal do frontend. Ele define a estrutura básica da página e inclui os arquivos JavaScript.
 
 ```html
 <!DOCTYPE html>
@@ -214,13 +202,9 @@ Este é o arquivo HTML principal do projeto front-end.
 </html>
 ```
 
-*   **Meta Tags:** Define metadados sobre a página HTML.
-*   **Links:**  Importa a biblioteca Font Awesome para ícones e o arquivo `manifest.json` para Progressive Web App (PWA).
-*   **`div#root`:**  É o ponto de montagem para a aplicação React.
+### client\public\manifest.json
 
-### `client/public/manifest.json`
-
-Este arquivo define os metadados para transformar a aplicação em uma PWA.
+Este arquivo define metadados sobre a aplicação web para permitir que ela seja instalada como um aplicativo progressivo (PWA).
 
 ```json
 {
@@ -240,9 +224,13 @@ Este arquivo define os metadados para transformar a aplicação em uma PWA.
 }
 ```
 
-### `client/src/actions/alert.js`
+### src/actions
 
-Este arquivo define as ações relacionadas aos alertas na aplicação.
+Esta pasta contém os arquivos que definem as actions do Redux. As actions são objetos que descrevem um evento que ocorreu na aplicação.
+
+#### src\actions\alert.js
+
+Este arquivo define as actions relacionadas a alertas na aplicação.
 
 ```javascript
 import { v4 as uuidv4 } from 'uuid';
@@ -259,14 +247,15 @@ export const setAlert = (msg, alertType, timeout = 5000) => dispatch => {
 };
 ```
 
-*   **`setAlert`:** Cria e despacha um alerta para o Redux store.
-    *   `msg`: Mensagem do alerta.
-    *   `alertType`: Tipo do alerta (ex: 'success', 'danger').
-    *   `timeout`: Tempo (em ms) antes do alerta desaparecer.
+**Função `setAlert`:**
 
-### `client/src/actions/auth.js`
+*   Cria um ID único para o alerta usando a biblioteca `uuid`.
+*   Dispara uma action do tipo `SET_ALERT` com a mensagem, tipo e ID do alerta.
+*   Define um timeout para remover o alerta após um determinado período.
 
-Este arquivo define as ações relacionadas à autenticação do usuário.
+#### src\actions\auth.js
+
+Este arquivo define as actions relacionadas à autenticação do usuário.
 
 ```javascript
 import api from '../utils/api';
@@ -350,14 +339,23 @@ export const login = (email, password) => async (dispatch) => {
 export const logout = () => ({ type: LOGOUT });
 ```
 
-*   **`loadUser`:** Carrega as informações do usuário autenticado a partir da API.
-*   **`register`:** Registra um novo usuário na API.
-*   **`login`:** Autentica um usuário existente na API.
-*   **`logout`:** Desloga o usuário, limpando o token e as informações do usuário.
+**Principais Funções:**
 
-### `client/src/actions/post.js`
+*   **loadUser:** Carrega as informações do usuário autenticado.
+*   **register:** Registra um novo usuário.
+*   **login:** Autentica um usuário existente.
+*   **logout:** Desloga o usuário.
 
-Este arquivo define as ações relacionadas aos posts da aplicação.
+**Fluxo de Dados (Exemplo: Registro):**
+
+1.  O componente de registro chama a action `register` com os dados do formulário.
+2.  A action `register` faz uma requisição POST para a API `/users`.
+3.  Se o registro for bem-sucedido, a action dispara `REGISTER_SUCCESS` e carrega as informações do usuário.
+4.  Se ocorrer um erro, a action dispara `REGISTER_FAIL` e exibe alertas com as mensagens de erro.
+
+#### src\actions\post.js
+
+Este arquivo define as actions relacionadas aos posts da aplicação.
 
 ```javascript
 import api from '../utils/api';
@@ -518,18 +516,20 @@ export const deleteComment = (postId, commentId) => async (dispatch) => {
 };
 ```
 
-*   **`getPosts`:** Busca todos os posts da API.
-*   **`addLike`:** Adiciona um "like" a um post na API.
-*   **`removeLike`:** Remove um "like" de um post na API.
-*   **`deletePost`:** Deleta um post da API.
-*   **`addPost`:** Adiciona um novo post na API.
-*   **`getPost`:** Busca um post específico da API.
-*   **`addComment`:** Adiciona um comentário a um post na API.
-*   **`deleteComment`:** Deleta um comentário de um post na API.
+**Principais Funções:**
 
-### `client/src/actions/profile.js`
+*   **getPosts:** Busca todos os posts.
+*   **addLike:** Adiciona um like a um post.
+*   **removeLike:** Remove um like de um post.
+*   **deletePost:** Deleta um post.
+*   **addPost:** Adiciona um novo post.
+*   **getPost:** Busca um post específico.
+*   **addComment:** Adiciona um comentário a um post.
+*   **deleteComment:** Deleta um comentário de um post.
 
-Este arquivo define as ações relacionadas ao perfil do usuário.
+#### src\actions\profile.js
+
+Este arquivo define as actions relacionadas ao perfil do usuário.
 
 ```javascript
 import api from '../utils/api';
@@ -754,20 +754,22 @@ export const deleteAccount = () => async (dispatch) => {
 };
 ```
 
-*   **`getCurrentProfile`:** Busca o perfil do usuário logado.
-*   **`getProfiles`:** Busca todos os perfis dos usuários.
-*   **`getProfileById`:** Busca um perfil específico pelo ID do usuário.
-*   **`getGithubRepos`:** Busca os repositórios do Github de um usuário.
-*   **`createProfile`:** Cria ou atualiza um perfil.
-*   **`addExperience`:** Adiciona uma experiência ao perfil.
-*   **`addEducation`:** Adiciona uma educação ao perfil.
-*   **`deleteExperience`:** Deleta uma experiência do perfil.
-*   **`deleteEducation`:** Deleta uma educação do perfil.
-*   **`deleteAccount`:** Deleta a conta do usuário e o perfil associado.
+**Principais Funções:**
 
-### `client/src/actions/types.js`
+*   **getCurrentProfile:** Busca o perfil do usuário atual.
+*   **getProfiles:** Busca todos os perfis.
+*   **getProfileById:** Busca um perfil específico por ID.
+*   **getGithubRepos:** Busca os repositórios do Github de um usuário.
+*   **createProfile:** Cria ou atualiza um perfil.
+*   **addExperience:** Adiciona uma experiência ao perfil.
+*   **addEducation:** Adiciona uma educação ao perfil.
+*   **deleteExperience:** Deleta uma experiência do perfil.
+*   **deleteEducation:** Deleta uma educação do perfil.
+*   **deleteAccount:** Deleta a conta e o perfil do usuário.
 
-Este arquivo define as constantes para os tipos de ação do Redux.
+#### src\actions\types.js
+
+Este arquivo define as constantes para os tipos de actions do Redux.
 
 ```javascript
 export const SET_ALERT = 'SET_ALERT';
@@ -797,63 +799,9 @@ export const ADD_COMMENT = 'ADD_COMMENT';
 export const REMOVE_COMMENT = 'REMOVE_COMMENT';
 ```
 
-### `client/src/App.css`
+### src\App.js
 
-Este arquivo contém os estilos CSS globais da aplicação.
-
-```css
-/* Global Styles */
-:root {
-  --primary-color: #17a2b8;
-  --dark-color: #343a40;
-  --light-color: #f4f4f4;
-  --danger-color: #dc3545;
-  --success-color: #28a745;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Raleway', sans-serif;
-  font-size: 1rem;
-  line-height: 1.6;
-  background-color: #fff;
-  color: #333;
-}
-
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-}
-
-ul {
-  list-style: none;
-}
-
-img {
-  width: 100%;
-}
-
-/* Utilities */
-.container {
-  max-width: 1100px;
-  margin: auto;
-  overflow: hidden;
-  padding: 0 2rem;
-  margin-top: 6rem;
-  margin-bottom: 3rem;
-}
-
-/* ... (rest of the CSS) ... */
-```
-
-### `client/src/App.js`
-
-Este é o componente raiz da aplicação React. Ele define as rotas e a estrutura da aplicação.
+Este é o componente principal da aplicação React. Ele define o roteamento e inclui outros componentes importantes.
 
 ```javascript
 import React, { useEffect } from 'react';
@@ -926,4 +874,120 @@ const App = () => {
           <Route
             path="add-experience"
             element={<PrivateRoute component={AddExperience} />}
-          
+          />
+          <Route
+            path="add-education"
+            element={<PrivateRoute component={AddEducation} />}
+          />
+          <Route path="posts" element={<PrivateRoute component={Posts} />} />
+          <Route path="posts/:id" element={<PrivateRoute component={Post} />} />
+          <Route path="/*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </Provider>
+  );
+};
+
+export default App;
+```
+
+**Principais Características:**
+
+*   **useEffect:** Hook do React que é executado após a renderização do componente. Ele carrega o usuário autenticado e configura um listener para o evento `storage` para detectar o logout em outras abas.
+*   **Routes e Route:** Componentes do `react-router-dom` que definem as rotas da aplicação.
+*   **PrivateRoute:** Componente que protege as rotas que exigem autenticação.
+*   **Provider:** Componente do `react-redux` que fornece o store do Redux para todos os componentes da aplicação.
+
+### src\App.css
+
+Este arquivo define os estilos globais da aplicação.
+
+```css
+/* Global Styles */
+:root {
+  --primary-color: #17a2b8;
+  --dark-color: #343a40;
+  --light-color: #f4f4f4;
+  --danger-color: #dc3545;
+  --success-color: #28a745;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Raleway', sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  background-color: #fff;
+  color: #333;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  width: 100%;
+}
+
+/* Utilities */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+  padding: 0 2rem;
+  margin-top: 6rem;
+  margin-bottom: 3rem;
+}
+
+/* Text Styles*/
+.x-large {
+  font-size: 4rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.large {
+  font-size: 3rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.lead {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-dark {
+  color: var(--dark-color);
+}
+
+/* Padding */
+.p {
+  padding: 0.5rem;
+}
+.p-1 {
+  padding: 1rem;
+}
+.p-2 {
+  padding: 2rem;
+}
+.p-3 {
+  padding: 3

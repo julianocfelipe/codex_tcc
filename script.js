@@ -1,6 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { generatMkWithJson } from './LLM/Gemini/Gemini.js'; // Usando import
+import { readdirSync, statSync, readFileSync, writeFileSync } from 'fs';
+import { join, extname, relative } from 'path';
+//import { generatMkWithJson } from './LLM/Gemini/Gemini.js'; 
+import Gemini from './LLM/Gemini/Gemini.js';
 
 /**
  * @param {String} dirPath - O caminho do diretório a ser lido.
@@ -18,21 +19,21 @@ function readFilesRecursive(dirPath) {
   const result = [];
 
   function readDir(currentPath) {
-    const items = fs.readdirSync(currentPath);
+    const items = readdirSync(currentPath);
 
     for (const item of items) {
-      const fullPath = path.join(currentPath, item);
-      const stats = fs.statSync(fullPath);
+      const fullPath = join(currentPath, item);
+      const stats = statSync(fullPath);
 
       if (stats.isDirectory()) {
         readDir(fullPath); // recursivamente lê a subpasta
       } else if (stats.isFile()) {
-        const ext = path.extname(fullPath).toLowerCase();
+        const ext = extname(fullPath).toLowerCase();
 
         if (extensoesPermitidas.includes(ext)) {
-          const content = fs.readFileSync(fullPath, 'utf-8');
+          const content = readFileSync(fullPath, 'utf-8');
           result.push({
-            name: path.relative(dirPath, fullPath),
+            name: relative(dirPath, fullPath),
             content: content
           });
         }
@@ -49,10 +50,9 @@ const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\devcon
 //const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\projeto-integrador-ia-main'
 //const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\mattermost-master';
 const arquivos = readFilesRecursive(caminhoDaPasta);
-console.log(JSON.stringify(arquivos, null, 2));
 
-  const conteudoMK = await generatMkWithJson(JSON.stringify(arquivos, null, 2))
-  fs.writeFileSync('./kkkk.mk', conteudoMK.replace('```markdown', ''));
-  console.log('Arquivo gerado com sucesso!');
+  // const conteudoMK = await Gemini.generatMkWithJson(JSON.stringify(arquivos, null, 2))
+  // writeFileSync('./kkkk.mk', conteudoMK.replace('```markdown', ''));
+  // console.log('Arquivo gerado com sucesso!');
 
-  export { readFilesRecursive };
+  export default { readFilesRecursive };

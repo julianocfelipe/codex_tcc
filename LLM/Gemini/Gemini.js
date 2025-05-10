@@ -1,4 +1,5 @@
-const axios = require('axios');
+import axios from 'axios';
+import { writeFileSync } from 'fs';
 
 const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='
 const key = 'AIzaSyDizcXSSfZTddqkSBwfRmKDIb_cv9ktTzM'
@@ -8,13 +9,17 @@ async function generatMkWithJson(json) {
   const prompt = `Gere o conteúdo de um arquivo Markdown para a documentação técnica de um projeto. com base no seguinte JSON: ${json}. O Markdown deve incluir: Súmario, se necessário demonstração de partes do código fonte, cada arquivo deve ser documentado.`
 
   try{
+    console.log('tentando gerar arquivo mk...')
     const response = await axios.post(baseUrl + key, {
       "contents": [{
         "parts": [{ "text": prompt }]        
       }],
     });
 
-    return response.data.candidates[0].content.parts[0].text;
+    const conteudoMK = response.data.candidates[0].content.parts[0].text;
+    writeFileSync('./arquivo.mk', conteudoMK.replace('```markdown', ''));
+    console.log('Arquivo gerado com sucesso!');
+    return 'Arquivo gerado com sucesso!';
   }
   catch (error) {
     console.error('---------------------------------------------');
@@ -74,4 +79,4 @@ O estilo da documentação deve ser claro, técnico e bem estruturado, com uso c
 
 }
 
-module.exports = { analysisFileContent, generateMd, generatMkWithJson};
+export default { analysisFileContent, generateMd, generatMkWithJson};
