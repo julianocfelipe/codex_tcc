@@ -5,28 +5,27 @@ const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-
 const key = 'AIzaSyDizcXSSfZTddqkSBwfRmKDIb_cv9ktTzM'
 
 
-async function generatMkWithJson(json) {
-  const prompt = `Gere o conteúdo de um arquivo Markdown para a documentação técnica de um projeto. com base no seguinte JSON: ${json}. O Markdown deve incluir: Súmario, se necessário demonstração de partes do código fonte, cada arquivo deve ser documentado.`
+async function generatMkWithJson(prompt, json, temperature = 0.5) {
+  try {
+    console.log('tentando gerar arquivo mk...');
 
-  try{
-    console.log('tentando gerar arquivo mk...')
     const response = await axios.post(baseUrl + key, {
-      "contents": [{
-        "parts": [{ "text": prompt }]        
+      contents: [{
+        parts: [{ text: `${prompt}\n\n${json}` }]
       }],
+      generationConfig: {
+        temperature: temperature
+      }
     });
 
     const conteudoMK = response.data.candidates[0].content.parts[0].text;
-    writeFileSync('./arquivo.mk', conteudoMK.replace('```markdown', ''));
     console.log('Arquivo gerado com sucesso!');
-    return 'Arquivo gerado com sucesso!';
-  }
-  catch (error) {
+    return conteudoMK.replace('```markdown', '').slice(0, -3);
+  } catch (error) {
     console.error('---------------------------------------------');
     console.error(error);
     return null;
   }
-
 }
 
 async function analysisFileContent(content) {

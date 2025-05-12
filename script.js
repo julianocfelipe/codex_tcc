@@ -46,13 +46,47 @@ function readFilesRecursive(dirPath) {
 }
 
 // Exemplo de uso:
-const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\devconnector_2.0-master'; 
-//const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\projeto-integrador-ia-main'
-//const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\mattermost-master';
+const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\devconnector_2.0-master';
 const arquivos = readFilesRecursive(caminhoDaPasta);
 
-  // const conteudoMK = await Gemini.generatMkWithJson(JSON.stringify(arquivos, null, 2))
-  // writeFileSync('./kkkk.mk', conteudoMK.replace('```markdown', ''));
-  // console.log('Arquivo gerado com sucesso!');
+// Lista de arquivos a ignorar
+const arquivosIgnorados = [
+  'package.json', 'package-lock.json', 'yarn.lock',
+  'README.md', 'readme.md', 'tsconfig.json', 'manifest.json'
+];
+
+// Limpa ou inicia o arquivo final
+writeFileSync('./documentacao_final.mk', '');
+
+for (const arquivo of arquivos) {
+  const nome = arquivo.name.toLowerCase();
+
+  // Ignorar arquivos irrelevantes
+  if (arquivosIgnorados.some(f => nome.endsWith(f))) {
+    console.log(`Ignorando: ${arquivo.name}`);
+    continue;
+  }
+
+  console.log(`Processando: ${arquivo.name}`);
+  const jsonArquivo = JSON.stringify([arquivo], null, 2);
+const promptBase = `Gere o conteúdo de um arquivo Markdown para a documentação técnica de um projeto. O Markdown deve incluir: 
+- Código-fonte relevante (sem comentários);
+- Tabelas para métodos, se aplicável;
+- Estrutura clara com títulos.`  
+  const conteudoParcial = await Gemini.generatMkWithJson(promptBase, JSON.stringify([arquivo], null, 2), 0.3);
+
+  if (conteudoParcial) {
+    writeFileSync(
+      './documentacao_final.mk',
+      `\n## Documentação: ${arquivo.name}\n\n${conteudoParcial}\n`,
+      { flag: 'a' }
+    );
+  } else {
+    console.warn(`Falha ao gerar documentação para ${arquivo.name}`);
+  }
+}
+
+console.log('Documentação completa gerada em documentacao_final.mk');
+
 
   export default { readFilesRecursive };
