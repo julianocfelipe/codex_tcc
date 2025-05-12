@@ -1,6 +1,5 @@
 import { readdirSync, statSync, readFileSync, writeFileSync } from 'fs';
 import { join, extname, relative } from 'path';
-//import { generatMkWithJson } from './LLM/Gemini/Gemini.js'; 
 import Gemini from './LLM/Gemini/Gemini.js';
 
 /**
@@ -26,7 +25,7 @@ function readFilesRecursive(dirPath) {
       const stats = statSync(fullPath);
 
       if (stats.isDirectory()) {
-        readDir(fullPath); // recursivamente lê a subpasta
+        readDir(fullPath);
       } else if (stats.isFile()) {
         const ext = extname(fullPath).toLowerCase();
 
@@ -45,48 +44,74 @@ function readFilesRecursive(dirPath) {
   return result;
 }
 
-// Exemplo de uso:
+function limparMarkdown(markdown, arquivoPath) {
+  const linhas = markdown.split('\n');
+  const linhasFiltradas = [];
+  let linhasVaziasSeguidas = 0;
+
+  for (let linha of linhas) {
+    if (linha.toLowerCase().includes(arquivoPath.toLowerCase()) && linha.toLowerCase().includes('documentação')) {
+      continue;
+    }
+
+    if (linha.trim() === '') {
+      linhasVaziasSeguidas++;
+      if (linhasVaziasSeguidas > 1) continue;
+    } else {
+      linhasVaziasSeguidas = 0;
+    }
+
+    linhasFiltradas.push(linha);
+  }
+
+  return linhasFiltradas.join('\n').trim();
+}
+
+// Caminho da pasta do projeto
 const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\devconnector_2.0-master';
 const arquivos = readFilesRecursive(caminhoDaPasta);
 
-// Lista de arquivos a ignorar
 const arquivosIgnorados = [
   'package.json', 'package-lock.json', 'yarn.lock',
   'README.md', 'readme.md', 'tsconfig.json', 'manifest.json'
 ];
 
-// Limpa ou inicia o arquivo final
-writeFileSync('./documentacao_final.mk', '');
-
-for (const arquivo of arquivos) {
-  const nome = arquivo.name.toLowerCase();
-
-  // Ignorar arquivos irrelevantes
-  if (arquivosIgnorados.some(f => nome.endsWith(f))) {
-    console.log(`Ignorando: ${arquivo.name}`);
-    continue;
-  }
-
-  console.log(`Processando: ${arquivo.name}`);
-  const jsonArquivo = JSON.stringify([arquivo], null, 2);
+// Prompt base
 const promptBase = `Gere o conteúdo de um arquivo Markdown para a documentação técnica de um projeto. O Markdown deve incluir: 
 - Código-fonte relevante (sem comentários);
 - Tabelas para métodos, se aplicável;
-- Estrutura clara com títulos.`  
-  const conteudoParcial = await Gemini.generatMkWithJson(promptBase, JSON.stringify([arquivo], null, 2), 0.3);
+- Estrutura clara com títulos.`;
 
-  if (conteudoParcial) {
-    writeFileSync(
-      './documentacao_final.mk',
-      `\n## Documentação: ${arquivo.name}\n\n${conteudoParcial}\n`,
-      { flag: 'a' }
-    );
-  } else {
-    console.warn(`Falha ao gerar documentação para ${arquivo.name}`);
-  }
+async function gerarDocumentacaoCompleta() {
+  const inicio = Date.now();
+
+  const promessas = arquivos
+    .filter(arquivo => !arquivosIgnorados.some(f => arquivo.name.toLowerCase().endsWith(f)))
+    .map(async (arquivo) => {
+      console.log(`Processando: ${arquivo.name}`);
+      const jsonArquivo = JSON.stringify([arquivo], null, 2);
+      const conteudo = await Gemini.generatMkWithJson(promptBase, jsonArquivo, 0.3);
+
+      if (conteudo) {
+        const markdownLimpo = limparMarkdown(conteudo, arquivo.name);
+        return `\n## ${arquivo.name}\n\n${markdownLimpo}\n`;
+      } else {
+        console.warn(`Falha ao gerar documentação para ${arquivo.name}`);
+        return '';
+      }
+    });
+
+  const blocosMarkdown = await Promise.all(promessas);
+  const markdownFinal = blocosMarkdown.filter(Boolean).join('\n\n');
+
+  writeFileSync('./documentacao_final.mk', markdownFinal.trim());
+
+  const fim = Date.now();
+  const segundos = ((fim - inicio) / 1000).toFixed(2);
+  console.log(`\n✅ Documentação completa gerada em documentacao_final.mk`);
+  console.log(`🕒 Tempo total: ${segundos} segundos`);
 }
 
-console.log('Documentação completa gerada em documentacao_final.mk');
+await gerarDocumentacaoCompleta();
 
-
-  export default { readFilesRecursive };
+export default { readFilesRecursive };
