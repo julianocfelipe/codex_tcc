@@ -45,6 +45,23 @@ async function analysisFileContent(content) {
   }
 }
 
+
+async function sendGemini(Prompt) {
+  try {
+    const response = await axios.post(baseUrl + key, {
+      "contents": [{
+        "parts": [{ "text": Prompt }]        
+      }],
+    });
+
+    return response.data.candidates[0].content.parts[0].text; 
+  } catch (error) {
+    console.error('Error:', error.message);
+    return null; 
+  }  
+
+}
+
 async function generateMd(context) {
   const prompt = `Gere o conteúdo de um arquivo Markdown para a documentação técnica de um projeto.
 As informações estão contidas no seguinte JSON: ${context}. Esse JSON representa a estrutura de um código-fonte em [especificar linguagem, ex: Python], contendo classes, funções e descrições.
@@ -78,4 +95,4 @@ O estilo da documentação deve ser claro, técnico e bem estruturado, com uso c
 
 }
 
-export default { analysisFileContent, generateMd, generatMkWithJson};
+export default { analysisFileContent, generateMd, generatMkWithJson, sendGemini};

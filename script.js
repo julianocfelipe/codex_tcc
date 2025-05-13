@@ -1,4 +1,4 @@
-import { readdirSync, statSync, readFileSync, writeFileSync } from 'fs';
+import { unlinkSync ,readdirSync, statSync, readFileSync, writeFileSync, readFile } from 'fs';
 import { join, extname, relative } from 'path';
 import Gemini from './LLM/Gemini/Gemini.js';
 
@@ -68,7 +68,8 @@ function limparMarkdown(markdown, arquivoPath) {
 }
 
 // Caminho da pasta do projeto
-const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\devconnector_2.0-master';
+//const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Documentos\\Projetos\\devconnector_2.0-master';
+const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Área de Trabalho\\Cardfort'
 const arquivos = readFilesRecursive(caminhoDaPasta);
 
 const arquivosIgnorados = [
@@ -82,6 +83,9 @@ const promptBase = `Gere o conteúdo de um arquivo Markdown para a documentaçã
 - Tabelas para métodos, se aplicável;
 - Estrutura clara com títulos.`;
 
+
+writeFileSync('./json.txt', arquivos.map(arquivo => JSON.stringify(arquivo)).join('\n'), 'utf-8');
+
 async function gerarDocumentacaoCompleta() {
   const inicio = Date.now();
 
@@ -90,11 +94,12 @@ async function gerarDocumentacaoCompleta() {
     .map(async (arquivo) => {
       console.log(`Processando: ${arquivo.name}`);
       const jsonArquivo = JSON.stringify([arquivo], null, 2);
-      const conteudo = await Gemini.generatMkWithJson(promptBase, jsonArquivo, 0.3);
+      const conteudo = await Gemini.generatMkWithJson(promptBase, jsonArquivo, 1.0);
 
       if (conteudo) {
         const markdownLimpo = limparMarkdown(conteudo, arquivo.name);
-        return `\n## ${arquivo.name}\n\n${markdownLimpo}\n`;
+       // return `\n## ${arquivo.name}\n\n${markdownLimpo}\n`;
+        return `\n${markdownLimpo}\n`;
       } else {
         console.warn(`Falha ao gerar documentação para ${arquivo.name}`);
         return '';
@@ -104,7 +109,7 @@ async function gerarDocumentacaoCompleta() {
   const blocosMarkdown = await Promise.all(promessas);
   const markdownFinal = blocosMarkdown.filter(Boolean).join('\n\n');
 
-  writeFileSync('./documentacao_final.mk', markdownFinal.trim());
+  writeFileSync('./documentacaoArquivos.mk', markdownFinal.trim());
 
   const fim = Date.now();
   const segundos = ((fim - inicio) / 1000).toFixed(2);
@@ -112,6 +117,22 @@ async function gerarDocumentacaoCompleta() {
   console.log(`🕒 Tempo total: ${segundos} segundos`);
 }
 
-await gerarDocumentacaoCompleta();
+async function gerarInicioDocumentacao(mk) {
 
+  const promp = `Com base nesse arquivo mk "${mk}" gere o overview da documentação e uma visualização das pastas e arquivos do projeto`
+
+  const conteudo = await Gemini.sendGemini(promp + mk);
+  writeFileSync('./inicioDocumentacao.mk', conteudo);
+}
+
+await gerarDocumentacaoCompleta();
+const markdownContent = readFileSync('./documentacao_final.mk', 'utf8');
+await gerarInicioDocumentacao(markdownContent)
+
+const markdownInicio = readFileSync('./inicioDocumentacao.mk', 'utf8');
+const markdownDocumentcao = readFileSync('./documentacaoArquivos.mk', 'utf8');
+
+writeFileSync('./documentacao_final.mk', markdownInicio +' '+ markdownDocumentcao, 'utf8');
+unlinkSync('./inicioDocumentacao.mk')
+unlinkSync('./documentacaoArquivos.mk')
 export default { readFilesRecursive };
