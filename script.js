@@ -1,6 +1,7 @@
-import { unlinkSync ,readdirSync, statSync, readFileSync, writeFileSync, readFile } from 'fs';
+import { unlinkSync ,readdirSync, statSync, readFileSync, writeFileSync } from 'fs';
 import { join, extname, relative } from 'path';
 import Gemini from './LLM/Gemini/Gemini.js';
+import MarkdownPDF from 'markdown-pdf';
 
 /**
  * @param {String} dirPath - O caminho do diretório a ser lido.
@@ -79,7 +80,7 @@ const arquivosIgnorados = [
 
 // Prompt base
 const promptBase = `Gere o conteúdo de um arquivo Markdown para a documentação técnica de um projeto. O Markdown deve incluir: 
-- Código-fonte relevante (sem comentários);
+- Código-fonte relevante (sem comentários) não precisa gerar o código-fonte completo, apenas o necessário para a documentação;
 - Tabelas para métodos, se aplicável;
 - Estrutura clara com títulos.`;
 
@@ -94,7 +95,7 @@ async function gerarDocumentacaoCompleta() {
     .map(async (arquivo) => {
       console.log(`Processando: ${arquivo.name}`);
       const jsonArquivo = JSON.stringify([arquivo], null, 2);
-      const conteudo = await Gemini.generatMkWithJson(promptBase, jsonArquivo, 1.0);
+      const conteudo = await Gemini.generatMkWithJson(promptBase, jsonArquivo, 0.5);
 
       if (conteudo) {
         const markdownLimpo = limparMarkdown(conteudo, arquivo.name);
@@ -135,4 +136,9 @@ const markdownDocumentcao = readFileSync('./documentacaoArquivos.mk', 'utf8');
 writeFileSync('./documentacao_final.mk', markdownInicio +' '+ markdownDocumentcao, 'utf8');
 unlinkSync('./inicioDocumentacao.mk')
 unlinkSync('./documentacaoArquivos.mk')
+
+MarkdownPDF().from('./documentacao_final.mk').to('./documentacao_final.pdf', ()=> {
+  console.log('Arquivo PDF gerado com sucesso!');
+});
+
 export default { readFilesRecursive };
