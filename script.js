@@ -63,7 +63,9 @@ function limparMarkdown(markdown, arquivoPath) {
   return linhasFiltradas.join('\n').trim();
 }
 
-const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Área de Trabalho\\projEnrico\\faculdade\\linguagens formais\\LinguagensFormais\\linguagensformais';
+//const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Área de Trabalho\\Cardfort';
+
+const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Área de Trabalho\\projEnrico\\faculdade\\linguagens formais\\LinguagensFormais\\linguagensformais'
 const arquivos = readFilesRecursive(caminhoDaPasta);
 
 const arquivosIgnorados = [
@@ -93,7 +95,7 @@ async function gerarDocumentacaoCompleta() {
         const markdownLimpo = limparMarkdown(conteudo, arquivo.name);
         return `\n${markdownLimpo}\n`;
       } else {
-        console.warn(`Falha ao gerar documentação para ${arquivo.name}`);
+        console.warn(`⚠️ Falha ao gerar documentação para ${arquivo.name}`);
         return '';
       }
     });
@@ -101,37 +103,38 @@ async function gerarDocumentacaoCompleta() {
   const blocosMarkdown = await Promise.all(promessas);
   const markdownFinal = blocosMarkdown.filter(Boolean).join('\n\n');
 
-  existsSync('./documentacaoArquivos.mk') && unlinkSync('./documentacaoArquivos.mk');
   writeFileSync('./documentacaoArquivos.mk', markdownFinal.trim());
 
   const fim = Date.now();
   const segundos = ((fim - inicio) / 1000).toFixed(2);
-  console.log(`\n✅ Documentação completa gerada em documentacao_final.mk`);
+  console.log(`\n✅ Documentação dos arquivos gerada em documentacaoArquivos.mk`);
   console.log(`🕒 Tempo total: ${segundos} segundos`);
 }
 
 async function gerarInicioDocumentacao(mk) {
-  const promp = `Com base nesse arquivo mk "${mk}" gere o overview da documentação e uma visualização das pastas e arquivos do projeto. o usuário irá apenas ler então você deve preencher todas as informações necessárias para que o usuário consiga entender o funcionamento do projeto.`;
+  const promp = `Com base nesse arquivo mk "${mk}" gere o overview da documentação e uma visualização das pastas e arquivos do projeto. O usuário irá apenas ler então você deve preencher todas as informações necessárias para que o usuário consiga entender o funcionamento do projeto.`;
 
   const conteudo = await Gemini.sendGemini(promp + mk);
 
-  existsSync('./inicioDocumentacao.mk') && unlinkSync('./inicioDocumentacao.mk');
   writeFileSync('./inicioDocumentacao.mk', conteudo);
 }
 
+// Remoção prévia de arquivos existentes
+['./documentacao_final.mk', './documentacaoArquivos.mk', './inicioDocumentacao.mk', './documentacao_final.pdf']
+  .forEach(path => existsSync(path) && unlinkSync(path));
+
+// Execução principal
 await gerarDocumentacaoCompleta();
-const markdownContent = readFileSync('./documentacao_final.mk', 'utf8');
-await gerarInicioDocumentacao(markdownContent);
+
+const markdownArquivos = readFileSync('./documentacaoArquivos.mk', 'utf8');
+await gerarInicioDocumentacao(markdownArquivos);
 
 const markdownInicio = readFileSync('./inicioDocumentacao.mk', 'utf8');
-const markdownDocumentcao = readFileSync('./documentacaoArquivos.mk', 'utf8');
+const markdownFinal = markdownInicio + '\n\n' + markdownArquivos;
+writeFileSync('./documentacao_final.mk', markdownFinal, 'utf8');
 
-existsSync('./documentacao_final.mk') && unlinkSync('./documentacao_final.mk');
-writeFileSync('./documentacao_final.mk', markdownInicio + ' ' + markdownDocumentcao, 'utf8');
-
-existsSync('./documentacao_final.pdf') && unlinkSync('./documentacao_final.pdf');
 MarkdownPDF().from('./documentacao_final.mk').to('./documentacao_final.pdf', () => {
-  console.log('Arquivo PDF gerado com sucesso!');
+  console.log('📄 Arquivo PDF gerado com sucesso!');
 });
 
 export default { readFilesRecursive };
