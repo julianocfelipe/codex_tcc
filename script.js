@@ -7,7 +7,8 @@ const extensoesPermitidas = [
   '.js', '.ts', '.jsx', '.tsx',
   '.html', '.css', '.scss',
   '.json', '.md', '.txt',
-  '.py', '.java', '.c', '.cpp', '.rb', '.go'
+  '.py', '.java', '.c', '.cpp', '.rb', '.go', '.php', '.swift',
+  '.sh', '.bash', '.sql', '.yaml', '.yml'
 ];
 
 function readFilesRecursive(dirPath) {
@@ -65,7 +66,7 @@ function limparMarkdown(markdown, arquivoPath) {
 
 //const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Área de Trabalho\\Cardfort';
 
-const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Área de Trabalho\\projEnrico\\faculdade\\linguagens formais\\LinguagensFormais\\linguagensformais'
+const caminhoDaPasta = 'C:\\Users\\Rafae\\OneDrive\\Área de Trabalho\\teste'
 const arquivos = readFilesRecursive(caminhoDaPasta);
 
 const arquivosIgnorados = [
