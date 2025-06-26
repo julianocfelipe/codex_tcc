@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { writeFileSync } from 'fs';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='
-const key = 'AIzaSyDizcXSSfZTddqkSBwfRmKDIb_cv9ktTzM'
 
+const baseUrl = process.env.GEMINI_API_URL
+const key = process.env.GEMINI_API_KEY;
 
 async function generatMkWithJson(prompt, json, temperature = 0.5) {
   try {
