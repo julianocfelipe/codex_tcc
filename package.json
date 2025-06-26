@@ -1,9 +1,11 @@
 {
+  "type": "module",
   "dependencies": {
     "axios": "^1.8.4",
     "commonjs": "^0.0.1",
     "express": "^5.1.0",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "markdown-pdf": "^11.0.0"
   },
   "name": "codex",
   "description": "Repositório para o TCC Codex, software para automatização de documentação técnica com IA",
