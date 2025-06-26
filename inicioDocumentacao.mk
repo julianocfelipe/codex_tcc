@@ -1,113 +1,61 @@
-## Overview Geral do Projeto
+## Documentação Técnica Integrada: Overview do Sistema
 
-Este documento fornece uma visão geral de dois sistemas distintos: um sistema de log em PHP e um controlador (MedicoController) para uma API em Java (Spring Framework) para gerenciamento de médicos.
+Esta documentação consolida a descrição de dois componentes distintos: um sistema de log em PHP e um controlador de médicos (`MedicoController`) em Java (Spring Boot). O objetivo é fornecer uma visão geral clara e concisa do funcionamento de cada sistema, suas dependências, funcionalidades e como eles se encaixam no contexto geral do projeto (embora não estejam diretamente relacionados).
 
-**Sistema de Log (PHP):**
+**Componentes Principais:**
 
-*   **Propósito:** Registrar as ações realizadas por usuários no banco de dados.
-*   **Arquitetura:**
-    *   Utiliza um sistema de tokens de acesso para identificar usuários.
-    *   Registra informações detalhadas sobre as modificações (tabela, ID do registro, descrição da ação).
-    *   Depende do arquivo `db_conn.php` para conexão com o banco de dados.
-    *   Utiliza as tabelas `access_tokens`, `log_reference` e `system_logs`.
-*   **Funções Principais:**
-    *   `registra_modificacoes`: Recebe um array de modificações e as registra individualmente.
-    *   `registrar_log`:  Registra um evento de log no banco de dados.
-*   **Fluxo de Execução:** Uma ação é realizada > `registra_modificacoes` é chamada > para cada modificação, `registrar_log` é chamada > `registrar_log` consulta o usuário pelo token e insere dados nas tabelas de log.
-*   **Segurança:** Proteção de tokens de acesso, descrições claras das ações e restrição de acesso às tabelas de log são cruciais.
+1.  **Sistema de Log (PHP):**  Responsável por registrar as alterações realizadas no banco de dados, incluindo informações sobre o usuário que realizou a modificação, a tabela afetada e a ação executada. Ele utiliza funções PHP (`registra_modificacoes` e `registrar_log`), dependendo de um arquivo de conexão ao banco de dados (`db_conn.php`) e assume a existência de tabelas específicas no banco de dados (`access_tokens`, `log_reference` e `system_logs`).
 
-**API MedicoController (Java - Spring Framework):**
+2.  **`MedicoController` (Java/Spring Boot):**  Um componente REST API que gerencia operações relacionadas a médicos, como cadastro, listagem, atualização, detalhamento e exclusão (lógica).  Utiliza Spring Boot, Spring Data JPA, DTOs, Bean Validation e Swagger para documentação. É protegido por autenticação via Bearer Token.
 
-*   **Propósito:**  Gerenciar informações de médicos através de uma API RESTful.
-*   **Arquitetura:**
-    *   Utiliza o Spring Framework para manipular requisições HTTP.
-    *   Interage com o `MedicoRepository` para persistência de dados.
-    *   A API é protegida por autenticação JWT (`@SecurityRequirement(name = "bearer-key")`).
-*   **Endpoints:**
-    *   `POST /medicos`: Cadastra um novo médico.
-    *   `GET /medicos`: Lista médicos ativos (paginado).
-    *   `PUT /medicos`: Atualiza informações de um médico existente.
-    *   `DELETE /medicos/{id}`: Exclui um médico (marca como inativo).
-    *   `GET /medicos/{id}`: Detalha informações de um médico.
-*   **Classes de Dados (DTOs):**
-    *   `DadosCadastroMedico`: Dados para cadastrar um médico.
-    *   `DadosAtualizacaoMedico`: Dados para atualizar um médico.
-    *   `DadosListagemMedico`: Dados para listagem de médicos.
-    *   `DadosDetalhamentoMedico`: Dados detalhados de um médico.
-    *   `DadosEndereco`:  Dados de endereço de um médico.
-*   **Detalhes dos Métodos:**
-    *   Cada método do controlador (cadastrar, listar, atualizar, deletar, detalhar) corresponde a uma operação CRUD na entidade `Medico`.
-*   **Validação:** `@Valid` para garantir a integridade dos dados recebidos.
-*   **Transacionalidade:** `@Transactional` para garantir a consistência das operações no banco de dados.
+**Relação entre os Componentes:**
 
-## Visualização da Estrutura de Pastas e Arquivos
+Embora descritos no mesmo documento, esses componentes *não compartilham dependências diretas*. O sistema de log é um módulo PHP autônomo que registra informações de auditoria. O `MedicoController` é uma API Java que gerencia dados de médicos.  É possível que o `MedicoController` _use_ o sistema de log para registrar ações como a criação, atualização ou exclusão de médicos, mas isso não é explicitamente mostrado no código fornecido. A implementação da integração dependeria de como a aplicação Java (via Spring Boot) interage com o sistema de log em PHP, possivelmente através de chamadas a APIs ou escrita em um banco de dados compartilhado.
 
-Para ajudar na compreensão da estrutura do projeto, segue uma visualização simplificada da organização dos arquivos, baseado nas informações da documentação. É importante notar que essa é uma estrutura *presumida* baseada no texto fornecido, e a estrutura real pode variar.
+**Público-Alvo:**
 
-**Estrutura Presumida do Projeto (PHP - Sistema de Log):**
+Esta documentação é destinada a desenvolvedores, arquitetos de software e qualquer pessoa envolvida no projeto que precise entender como os diferentes componentes funcionam e como eles se encaixam na arquitetura geral do sistema.
+
+## Visualização da Estrutura de Pastas e Arquivos (Simulação)
+
+Dado que a documentação não fornece explicitamente a estrutura de diretórios, esta seção apresenta uma possível organização, baseada nas informações disponíveis.
 
 ```
-raiz_do_projeto/
+├── php_modules/          # (Possível diretório para módulos PHP)
+│   └── system_log/      # Diretório específico para o sistema de log
+│       ├── db_conn.php   # Arquivo de conexão com o banco de dados
+│       └── log.php       # Arquivo contendo as funções registra_modificacoes e registrar_log
 │
-├── db_conn.php          # Arquivo de conexão com o banco de dados (PDO)
-├── log_function.php   # Arquivo contendo as funções registra_modificacoes e registrar_log
-└── [outras pastas e arquivos do sistema PHP]
-```
-
-**Descrição:**
-
-*   `db_conn.php`: Contém a lógica para estabelecer a conexão com o banco de dados, utilizando PDO.  É provável que contenha informações de configuração como o nome do banco de dados, usuário, senha e host.
-*   `log_function.php`: Contém as funções principais para registrar as modificações no banco de dados.  Ele importa o arquivo `db_conn.php` para poder acessar a conexão com o banco de dados.
-*   `[outras pastas e arquivos do sistema PHP]`: Representa o restante da estrutura do projeto PHP, que não foi detalhada na documentação.  Poderia incluir arquivos para gerenciamento de usuários, tokens, rotas, etc.
-
-**Estrutura Presumida do Projeto (Java - API MedicoController):**
-
-```
-raiz_do_projeto/
+├── java_backend/         # (Possível diretório para o backend Java)
+│   ├── src/main/java/med/voll/api/  # Estrutura de pacotes Java
+│   │   ├── controller/
+│   │   │   └── MedicoController.java  # Controlador REST para médicos
+│   │   ├── domain/
+│   │   │   ├── medico/
+│   │   │   │   ├── Medico.java         # Entidade Medico
+│   │   │   │   ├── MedicoRepository.java # Repositório JPA para Medico
+│   │   │   │   ├── DadosCadastroMedico.java  # DTO para cadastro de medico
+│   │   │   │   ├── DadosListagemMedico.java  # DTO para listagem de medico
+│   │   │   │   ├── DadosAtualizacaoMedico.java # DTO para atualização de medico
+│   │   │   │   └── DadosDetalhamentoMedico.java # DTO para detalhamento de medico
+│   │   │   └── ...
+│   │   └── ...
+│   └── pom.xml           # Arquivo de configuração do Maven (dependências, build, etc.)
 │
-└── src/
-    │
-    └── main/
-        │
-        └── java/
-            │
-            └── med/
-                │
-                └── voll/
-                    │
-                    └── api/
-                        │
-                        ├── controller/
-                        │   │
-                        │   └── MedicoController.java  # Controlador REST para médicos
-                        │
-                        ├── domain/
-                        │   │
-                        │   └── medico/
-                        │       │
-                        │       ├── Medico.java                  # Entidade Medico (classe de modelo)
-                        │       ├── MedicoRepository.java        # Interface para acesso ao banco de dados (JPA Repository)
-                        │       ├── DadosCadastroMedico.java     # DTO para cadastro de médicos
-                        │       ├── DadosAtualizacaoMedico.java    # DTO para atualização de médicos
-                        │       ├── DadosListagemMedico.java    # DTO para listagem de médicos
-                        │       ├── DadosDetalhamentoMedico.java   # DTO para detalhamento de médicos
-                        │       └── Especialidade.java          # Enum para especialidades médicas
-                        │
-                        └── DadosEndereco.java               # DTO para informações de endereço
-
+└── docs/               # (Possível diretório para documentação)
+    └── README.md         # Documento principal (onde esta informação pode residir)
 ```
 
-**Descrição:**
+**Explicação:**
 
-*   `src/main/java/med/voll/api/controller/MedicoController.java`: Este é o arquivo principal da API, contendo a classe `MedicoController` que define os endpoints REST para gerenciamento de médicos.
-*   `src/main/java/med/voll/api/domain/medico/*`: Esta pasta contém as classes relacionadas à entidade `Medico`. Isso inclui a classe `Medico` (que representa a tabela de médicos no banco de dados), a interface `MedicoRepository` (que fornece métodos para acessar e manipular os dados dos médicos no banco de dados), e as classes DTO (Data Transfer Objects) que são usadas para transferir dados entre a API e o cliente.
-*   `src/main/java/med/voll/api/DadosEndereco.java`:  Contém a classe `DadosEndereco`, que é um DTO para representar informações de endereço.
-*   `[outras pastas e arquivos do projeto Java]`: Representa o restante da estrutura do projeto Java, que não foi detalhada na documentação.  Isso inclui arquivos de configuração do Spring, classes de serviço, exceptions, configurações de segurança, etc.
+*   **`php_modules/`:** Uma possível pasta para conter módulos PHP. Dentro dela, `system_log/` guarda os arquivos PHP relacionados ao sistema de log.
+*   **`java_backend/`:** Uma possível pasta para o backend Java.  A estrutura de diretórios segue as convenções do Spring Boot, com pacotes organizando o código Java. O `pom.xml` é o arquivo de configuração do Maven, gerenciando as dependências e o build da aplicação Java.
+*   **`docs/`:** Uma pasta para a documentação geral do projeto.
 
-**Considerações:**
+**Observações:**
 
-*   **Nomes de Pastas e Pacotes:** A estrutura mostrada é uma convenção comum para projetos Java usando Maven ou Gradle, onde as pastas refletem a estrutura dos pacotes Java.
-*   **Frameworks e Bibliotecas:** O projeto Java utiliza o Spring Framework, JPA (Hibernate provavelmente), e Swagger/OpenAPI para documentação.
-*   **Dados Faltantes:** Essa é uma representação simplificada. Um projeto real teria mais arquivos e pastas para lidar com configurações, testes, recursos estáticos, etc.
+*   Esta é uma *estrutura de diretórios hipotética*. A estrutura real pode variar dependendo das decisões de organização do projeto.
+*   A documentação não detalha a estrutura completa do projeto, apenas os arquivos relevantes para os sistemas de log e o `MedicoController`.
+*   A relação entre os sistemas (se houver) não está visível na estrutura de diretórios, pois eles parecem ser módulos independentes.
 
-Essa visualização combinada oferece um entendimento da organização dos arquivos em ambos os projetos, facilitando a localização e a compreensão dos componentes principais.
+Este documento visa fornecer uma compreensão inicial do projeto, seus componentes e sua possível organização. Para uma visão mais detalhada, é fundamental examinar o código-fonte, os arquivos de configuração e a documentação específica de cada componente.

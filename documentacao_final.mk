@@ -1,202 +1,82 @@
-## Overview Geral do Projeto
+## Documentação Técnica Integrada: Overview do Sistema
 
-Este documento fornece uma visão geral de dois sistemas distintos: um sistema de log em PHP e um controlador (MedicoController) para uma API em Java (Spring Framework) para gerenciamento de médicos.
+Esta documentação consolida a descrição de dois componentes distintos: um sistema de log em PHP e um controlador de médicos (`MedicoController`) em Java (Spring Boot). O objetivo é fornecer uma visão geral clara e concisa do funcionamento de cada sistema, suas dependências, funcionalidades e como eles se encaixam no contexto geral do projeto (embora não estejam diretamente relacionados).
 
-**Sistema de Log (PHP):**
+**Componentes Principais:**
 
-*   **Propósito:** Registrar as ações realizadas por usuários no banco de dados.
-*   **Arquitetura:**
-    *   Utiliza um sistema de tokens de acesso para identificar usuários.
-    *   Registra informações detalhadas sobre as modificações (tabela, ID do registro, descrição da ação).
-    *   Depende do arquivo `db_conn.php` para conexão com o banco de dados.
-    *   Utiliza as tabelas `access_tokens`, `log_reference` e `system_logs`.
-*   **Funções Principais:**
-    *   `registra_modificacoes`: Recebe um array de modificações e as registra individualmente.
-    *   `registrar_log`:  Registra um evento de log no banco de dados.
-*   **Fluxo de Execução:** Uma ação é realizada > `registra_modificacoes` é chamada > para cada modificação, `registrar_log` é chamada > `registrar_log` consulta o usuário pelo token e insere dados nas tabelas de log.
-*   **Segurança:** Proteção de tokens de acesso, descrições claras das ações e restrição de acesso às tabelas de log são cruciais.
+1.  **Sistema de Log (PHP):**  Responsável por registrar as alterações realizadas no banco de dados, incluindo informações sobre o usuário que realizou a modificação, a tabela afetada e a ação executada. Ele utiliza funções PHP (`registra_modificacoes` e `registrar_log`), dependendo de um arquivo de conexão ao banco de dados (`db_conn.php`) e assume a existência de tabelas específicas no banco de dados (`access_tokens`, `log_reference` e `system_logs`).
 
-**API MedicoController (Java - Spring Framework):**
+2.  **`MedicoController` (Java/Spring Boot):**  Um componente REST API que gerencia operações relacionadas a médicos, como cadastro, listagem, atualização, detalhamento e exclusão (lógica).  Utiliza Spring Boot, Spring Data JPA, DTOs, Bean Validation e Swagger para documentação. É protegido por autenticação via Bearer Token.
 
-*   **Propósito:**  Gerenciar informações de médicos através de uma API RESTful.
-*   **Arquitetura:**
-    *   Utiliza o Spring Framework para manipular requisições HTTP.
-    *   Interage com o `MedicoRepository` para persistência de dados.
-    *   A API é protegida por autenticação JWT (`@SecurityRequirement(name = "bearer-key")`).
-*   **Endpoints:**
-    *   `POST /medicos`: Cadastra um novo médico.
-    *   `GET /medicos`: Lista médicos ativos (paginado).
-    *   `PUT /medicos`: Atualiza informações de um médico existente.
-    *   `DELETE /medicos/{id}`: Exclui um médico (marca como inativo).
-    *   `GET /medicos/{id}`: Detalha informações de um médico.
-*   **Classes de Dados (DTOs):**
-    *   `DadosCadastroMedico`: Dados para cadastrar um médico.
-    *   `DadosAtualizacaoMedico`: Dados para atualizar um médico.
-    *   `DadosListagemMedico`: Dados para listagem de médicos.
-    *   `DadosDetalhamentoMedico`: Dados detalhados de um médico.
-    *   `DadosEndereco`:  Dados de endereço de um médico.
-*   **Detalhes dos Métodos:**
-    *   Cada método do controlador (cadastrar, listar, atualizar, deletar, detalhar) corresponde a uma operação CRUD na entidade `Medico`.
-*   **Validação:** `@Valid` para garantir a integridade dos dados recebidos.
-*   **Transacionalidade:** `@Transactional` para garantir a consistência das operações no banco de dados.
+**Relação entre os Componentes:**
 
-## Visualização da Estrutura de Pastas e Arquivos
+Embora descritos no mesmo documento, esses componentes *não compartilham dependências diretas*. O sistema de log é um módulo PHP autônomo que registra informações de auditoria. O `MedicoController` é uma API Java que gerencia dados de médicos.  É possível que o `MedicoController` _use_ o sistema de log para registrar ações como a criação, atualização ou exclusão de médicos, mas isso não é explicitamente mostrado no código fornecido. A implementação da integração dependeria de como a aplicação Java (via Spring Boot) interage com o sistema de log em PHP, possivelmente através de chamadas a APIs ou escrita em um banco de dados compartilhado.
 
-Para ajudar na compreensão da estrutura do projeto, segue uma visualização simplificada da organização dos arquivos, baseado nas informações da documentação. É importante notar que essa é uma estrutura *presumida* baseada no texto fornecido, e a estrutura real pode variar.
+**Público-Alvo:**
 
-**Estrutura Presumida do Projeto (PHP - Sistema de Log):**
+Esta documentação é destinada a desenvolvedores, arquitetos de software e qualquer pessoa envolvida no projeto que precise entender como os diferentes componentes funcionam e como eles se encaixam na arquitetura geral do sistema.
+
+## Visualização da Estrutura de Pastas e Arquivos (Simulação)
+
+Dado que a documentação não fornece explicitamente a estrutura de diretórios, esta seção apresenta uma possível organização, baseada nas informações disponíveis.
 
 ```
-raiz_do_projeto/
+├── php_modules/          # (Possível diretório para módulos PHP)
+│   └── system_log/      # Diretório específico para o sistema de log
+│       ├── db_conn.php   # Arquivo de conexão com o banco de dados
+│       └── log.php       # Arquivo contendo as funções registra_modificacoes e registrar_log
 │
-├── db_conn.php          # Arquivo de conexão com o banco de dados (PDO)
-├── log_function.php   # Arquivo contendo as funções registra_modificacoes e registrar_log
-└── [outras pastas e arquivos do sistema PHP]
-```
-
-**Descrição:**
-
-*   `db_conn.php`: Contém a lógica para estabelecer a conexão com o banco de dados, utilizando PDO.  É provável que contenha informações de configuração como o nome do banco de dados, usuário, senha e host.
-*   `log_function.php`: Contém as funções principais para registrar as modificações no banco de dados.  Ele importa o arquivo `db_conn.php` para poder acessar a conexão com o banco de dados.
-*   `[outras pastas e arquivos do sistema PHP]`: Representa o restante da estrutura do projeto PHP, que não foi detalhada na documentação.  Poderia incluir arquivos para gerenciamento de usuários, tokens, rotas, etc.
-
-**Estrutura Presumida do Projeto (Java - API MedicoController):**
-
-```
-raiz_do_projeto/
+├── java_backend/         # (Possível diretório para o backend Java)
+│   ├── src/main/java/med/voll/api/  # Estrutura de pacotes Java
+│   │   ├── controller/
+│   │   │   └── MedicoController.java  # Controlador REST para médicos
+│   │   ├── domain/
+│   │   │   ├── medico/
+│   │   │   │   ├── Medico.java         # Entidade Medico
+│   │   │   │   ├── MedicoRepository.java # Repositório JPA para Medico
+│   │   │   │   ├── DadosCadastroMedico.java  # DTO para cadastro de medico
+│   │   │   │   ├── DadosListagemMedico.java  # DTO para listagem de medico
+│   │   │   │   ├── DadosAtualizacaoMedico.java # DTO para atualização de medico
+│   │   │   │   └── DadosDetalhamentoMedico.java # DTO para detalhamento de medico
+│   │   │   └── ...
+│   │   └── ...
+│   └── pom.xml           # Arquivo de configuração do Maven (dependências, build, etc.)
 │
-└── src/
-    │
-    └── main/
-        │
-        └── java/
-            │
-            └── med/
-                │
-                └── voll/
-                    │
-                    └── api/
-                        │
-                        ├── controller/
-                        │   │
-                        │   └── MedicoController.java  # Controlador REST para médicos
-                        │
-                        ├── domain/
-                        │   │
-                        │   └── medico/
-                        │       │
-                        │       ├── Medico.java                  # Entidade Medico (classe de modelo)
-                        │       ├── MedicoRepository.java        # Interface para acesso ao banco de dados (JPA Repository)
-                        │       ├── DadosCadastroMedico.java     # DTO para cadastro de médicos
-                        │       ├── DadosAtualizacaoMedico.java    # DTO para atualização de médicos
-                        │       ├── DadosListagemMedico.java    # DTO para listagem de médicos
-                        │       ├── DadosDetalhamentoMedico.java   # DTO para detalhamento de médicos
-                        │       └── Especialidade.java          # Enum para especialidades médicas
-                        │
-                        └── DadosEndereco.java               # DTO para informações de endereço
-
+└── docs/               # (Possível diretório para documentação)
+    └── README.md         # Documento principal (onde esta informação pode residir)
 ```
 
-**Descrição:**
+**Explicação:**
 
-*   `src/main/java/med/voll/api/controller/MedicoController.java`: Este é o arquivo principal da API, contendo a classe `MedicoController` que define os endpoints REST para gerenciamento de médicos.
-*   `src/main/java/med/voll/api/domain/medico/*`: Esta pasta contém as classes relacionadas à entidade `Medico`. Isso inclui a classe `Medico` (que representa a tabela de médicos no banco de dados), a interface `MedicoRepository` (que fornece métodos para acessar e manipular os dados dos médicos no banco de dados), e as classes DTO (Data Transfer Objects) que são usadas para transferir dados entre a API e o cliente.
-*   `src/main/java/med/voll/api/DadosEndereco.java`:  Contém a classe `DadosEndereco`, que é um DTO para representar informações de endereço.
-*   `[outras pastas e arquivos do projeto Java]`: Representa o restante da estrutura do projeto Java, que não foi detalhada na documentação.  Isso inclui arquivos de configuração do Spring, classes de serviço, exceptions, configurações de segurança, etc.
+*   **`php_modules/`:** Uma possível pasta para conter módulos PHP. Dentro dela, `system_log/` guarda os arquivos PHP relacionados ao sistema de log.
+*   **`java_backend/`:** Uma possível pasta para o backend Java.  A estrutura de diretórios segue as convenções do Spring Boot, com pacotes organizando o código Java. O `pom.xml` é o arquivo de configuração do Maven, gerenciando as dependências e o build da aplicação Java.
+*   **`docs/`:** Uma pasta para a documentação geral do projeto.
 
-**Considerações:**
+**Observações:**
 
-*   **Nomes de Pastas e Pacotes:** A estrutura mostrada é uma convenção comum para projetos Java usando Maven ou Gradle, onde as pastas refletem a estrutura dos pacotes Java.
-*   **Frameworks e Bibliotecas:** O projeto Java utiliza o Spring Framework, JPA (Hibernate provavelmente), e Swagger/OpenAPI para documentação.
-*   **Dados Faltantes:** Essa é uma representação simplificada. Um projeto real teria mais arquivos e pastas para lidar com configurações, testes, recursos estáticos, etc.
+*   Esta é uma *estrutura de diretórios hipotética*. A estrutura real pode variar dependendo das decisões de organização do projeto.
+*   A documentação não detalha a estrutura completa do projeto, apenas os arquivos relevantes para os sistemas de log e o `MedicoController`.
+*   A relação entre os sistemas (se houver) não está visível na estrutura de diretórios, pois eles parecem ser módulos independentes.
 
-Essa visualização combinada oferece um entendimento da organização dos arquivos em ambos os projetos, facilitando a localização e a compreensão dos componentes principais.
+Este documento visa fornecer uma compreensão inicial do projeto, seus componentes e sua possível organização. Para uma visão mais detalhada, é fundamental examinar o código-fonte, os arquivos de configuração e a documentação específica de cada componente.
 
 
 # Documentação Técnica: Sistema de Log
 
-Este documento descreve o funcionamento do sistema de log, incluindo as funções principais e como elas interagem para registrar modificações em um banco de dados.
+Este documento descreve o funcionamento do sistema de log implementado no projeto, detalhando as funções `registra_modificacoes` e `registrar_log`. O sistema permite rastrear alterações em tabelas do banco de dados, registrando informações sobre o usuário que realizou a modificação, a tabela afetada e a ação executada.
 
 ## Visão Geral
 
-O sistema de log foi projetado para registrar as ações realizadas por usuários em tabelas específicas do banco de dados. Ele utiliza tokens de acesso para identificar o usuário que realizou a ação e armazena informações detalhadas sobre a modificação, como a tabela afetada, o ID do registro e a descrição da ação.
+O sistema de log é composto por duas funções principais:
 
-## Arquivo `log_function.php`
+1.  **`registra_modificacoes`**:  Recebe um array de modificações, um token de acesso, o ID da entidade modificada e o nome da tabela.  Itera sobre o array de modificações e chama a função `registrar_log` para cada uma delas.
+2.  **`registrar_log`**:  Recebe um token de acesso, o ID da entidade modificada, o nome da tabela e a descrição da ação realizada.  Valida o token, registra a referência à modificação e, finalmente, registra o log da ação.
 
-Este arquivo contém as funções principais para registrar as modificações. Ele depende do arquivo `db_conn.php` para estabelecer a conexão com o banco de dados.
+## Dependências
 
-### Dependências
+O sistema de log depende do arquivo `db_conn.php`, que deve conter a configuração e a conexão com o banco de dados.  Assume-se que o banco de dados seja compatível com PDO e que possua as tabelas `access_tokens`, `log_reference` e `system_logs`.
 
-*   **`db_conn.php`**: Responsável por estabelecer a conexão com o banco de dados usando PDO.
-
-### Funções
-
-#### `registra_modificacoes(array $modificacoes, $token, $id, $table)`
-
-Esta função recebe um array de modificações e registra cada uma delas individualmente.
-
-**Descrição:** Itera sobre o array de modificações e chama a função `registrar_log` para cada modificação.
-
-**Parâmetros:**
-
-| Parâmetro     | Tipo    | Descrição                                                                  |
-| :------------ | :------ | :------------------------------------------------------------------------- |
-| `$modificacoes` | `array` | Um array contendo as descrições das modificações a serem registradas.       |
-| `$token`       | `string`| O token de acesso do usuário que realizou as modificações.                |
-| `$id`          | `int`   | O ID do registro na tabela que foi modificado.                           |
-| `$table`       | `string`| O nome da tabela que foi modificada.                                     |
-
-**Retorno:**
-
-*   `true`: Se todas as modificações foram registradas com sucesso.
-*   `false`: Se o array de modificações estiver vazio.
-
-**Exemplo de Uso:**
-
-```php
-$modificacoes = [
-    "Nome alterado de 'João' para 'José'",
-    "Email alterado de 'joao@example.com' para 'jose@example.com'"
-];
-$token = "seu_token_de_acesso";
-$id = 123;
-$table = "usuarios";
-
-$resultado = registra_modificacoes($modificacoes, $token, $id, $table);
-
-if ($resultado) {
-    echo "Modificações registradas com sucesso!";
-} else {
-    echo "Nenhuma modificação para registrar.";
-}
-```
-
-#### `registrar_log($token, $id, $table, $action)`
-
-Esta função registra um evento de log no banco de dados.
-
-**Descrição:**
-
-1.  Consulta o banco de dados para obter o nome de usuário associado ao token de acesso fornecido.
-2.  Insere uma entrada na tabela `log_reference` com o ID da referência e o nome da tabela.
-3.  Obtém o ID gerado automaticamente para a entrada na tabela `log_reference`.
-4.  Insere uma entrada na tabela `system_logs` com o nome de usuário, o ID da referência do log e a descrição da ação.
-
-**Parâmetros:**
-
-| Parâmetro | Tipo    | Descrição                                                                                                |
-| :-------- | :------ | :------------------------------------------------------------------------------------------------------- |
-| `$token`   | `string`| O token de acesso do usuário que realizou a ação.                                                       |
-| `$id`      | `int`   | O ID do registro na tabela que foi modificado.                                                          |
-| `$table`   | `string`| O nome da tabela que foi modificada.                                                                   |
-| `$action`  | `string`| Uma descrição da ação realizada (ex: "Usuário criado", "Registro atualizado", "Registro excluído"). |
-
-**Retorno:**
-
-*   `true`: Se o log foi registrado com sucesso.
-*   `false`: Se o token de acesso não for encontrado no banco de dados.
-
-**Código-fonte Relevante:**
+## Código-Fonte Relevante
 
 ```php
 <?php
@@ -228,7 +108,6 @@ function registrar_log($token, $id, $table, $action){
 
     $sql = "INSERT INTO log_reference (reference_id, table_name) 
             VALUES (:reference_id, :table_name) RETURNING id";
-            
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':reference_id', $id, PDO::PARAM_INT);
     $stmt->bindParam(':table_name', $table, PDO::PARAM_STR);
@@ -237,7 +116,6 @@ function registrar_log($token, $id, $table, $action){
 
     $sql = "INSERT INTO system_logs (username, log_reference_id, action) 
             VALUES (:username, :log_reference_id, :action)";
-            
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':username', $username, PDO::PARAM_STR);
     $stmt->bindParam(':log_reference_id', $insert_id, PDO::PARAM_INT);
@@ -248,49 +126,128 @@ function registrar_log($token, $id, $table, $action){
 ?>
 ```
 
-### Tabelas do Banco de Dados
+## Funções Detalhadas
 
-O sistema de log utiliza as seguintes tabelas no banco de dados:
+### `registra_modificacoes`
 
-*   **`access_tokens`**: Armazena os tokens de acesso dos usuários e seus respectivos nomes de usuário.
-    *   `access_token` (VARCHAR): O token de acesso.
-    *   `username` (VARCHAR): O nome de usuário associado ao token.
-*   **`log_reference`**: Armazena a referência a qual tabela e ID o log se refere.
-    *   `id` (SERIAL PRIMARY KEY): O ID único do log de referência.
-    *   `reference_id` (INT): O ID do registro na tabela que foi modificada.
-    *   `table_name` (VARCHAR): O nome da tabela que foi modificada.
-*   **`system_logs`**: Armazena os logs do sistema.
-    *   `id` (SERIAL PRIMARY KEY): O ID único do log.
-    *   `username` (VARCHAR): O nome de usuário que realizou a ação.
-    *   `log_reference_id` (INT): O ID da referência do log na tabela `log_reference`.
-    *   `action` (VARCHAR): A descrição da ação realizada.
+Esta função é responsável por iterar sobre uma lista de modificações e registrar cada uma delas no sistema de log.
 
-### Fluxo de Execução
+| Parâmetro     | Tipo    | Descrição                                                                                                                                              |
+|--------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `$modificacoes` | `array` | Um array de strings, onde cada string representa uma modificação realizada.  Exemplo: `["Campo X alterado de 'A' para 'B'", "Status alterado para 'Ativo'"]`. |
+| `$token`        | `string` | O token de acesso do usuário que realizou as modificações.  Este token é usado para identificar o usuário no banco de dados.                                   |
+| `$id`           | `int`    | O ID da entidade (registro) que foi modificada na tabela.                                                                                                     |
+| `$table`        | `string` | O nome da tabela onde a entidade foi modificada.                                                                                                          |
 
-1.  Uma ação é realizada no sistema que requer registro (ex: atualização de um registro).
-2.  A função `registra_modificacoes` é chamada, recebendo um array com as descrições de cada modificação.
-3.  Para cada modificação, a função `registrar_log` é chamada.
-4.  `registrar_log` consulta a tabela `access_tokens` para obter o nome de usuário associado ao token fornecido.
-5.  `registrar_log` insere uma nova entrada na tabela `log_reference` com o ID do registro modificado e o nome da tabela.
-6.  `registrar_log` insere uma nova entrada na tabela `system_logs` com o nome de usuário, o ID da referência do log e a descrição da ação.
+**Retorno:**
 
-### Considerações de Segurança
+*   `true` se todas as modificações forem registradas com sucesso.
+*   `false` se o array de modificações estiver vazio.
 
-*   É crucial proteger os tokens de acesso para evitar o registro de ações em nome de outros usuários.
-*   As descrições das ações devem ser claras e concisas para facilitar a análise dos logs.
+**Exemplo de Uso:**
+
+```php
+$modificacoes = ["Nome alterado de 'Produto A' para 'Produto B'", "Preço alterado de 10.00 para 12.00"];
+$token = "seu_token_de_acesso";
+$id_produto = 123;
+$tabela = "produtos";
+
+$resultado = registra_modificacoes($modificacoes, $token, $id_produto, $tabela);
+
+if ($resultado) {
+    echo "Modificações registradas com sucesso!";
+} else {
+    echo "Nenhuma modificação registrada.";
+}
+```
+
+### `registrar_log`
+
+Esta função é responsável por registrar uma única ação no sistema de log.  Ela valida o token de acesso, cria uma referência para a modificação na tabela `log_reference` e, finalmente, registra a ação na tabela `system_logs`.
+
+| Parâmetro     | Tipo    | Descrição                                                                                                                                              |
+|--------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `$token`        | `string` | O token de acesso do usuário que realizou a modificação.  Usado para identificar o usuário.                                                                   |
+| `$id`           | `int`    | O ID da entidade (registro) que foi modificada na tabela.                                                                                                     |
+| `$table`        | `string` | O nome da tabela onde a entidade foi modificada.                                                                                                          |
+| `$action`       | `string` | Uma descrição da ação realizada. Exemplo:  `"Usuário deletado do sistema"`, `"Senha alterada"`.                                                                |
+
+**Retorno:**
+
+*   `true` se a ação for registrada com sucesso.
+*   `false` se o token de acesso for inválido.
+
+**Lógica:**
+
+1.  **Validação do Token:**  A função primeiro consulta a tabela `access_tokens` para verificar se o token fornecido é válido e para obter o nome de usuário associado ao token. Se o token não for encontrado, a função retorna `false`.
+2.  **Registro da Referência:** A função insere um registro na tabela `log_reference`, contendo o ID da entidade modificada (`reference_id`) e o nome da tabela (`table_name`).  O ID gerado por esta inserção é usado como chave estrangeira na tabela `system_logs`.
+3.  **Registro do Log:** A função insere um registro na tabela `system_logs`, contendo o nome de usuário, o ID da referência ao log (`log_reference_id`) e a descrição da ação (`action`).
+
+**Exemplo de Uso:**
+
+```php
+$token = "seu_token_de_acesso";
+$id_usuario = 456;
+$tabela = "usuarios";
+$acao = "Usuário editado: email alterado de 'antigo@email.com' para 'novo@email.com'";
+
+$resultado = registrar_log($token, $id_usuario, $tabela, $acao);
+
+if ($resultado) {
+    echo "Log registrado com sucesso!";
+} else {
+    echo "Falha ao registrar o log.";
+}
+```
+
+## Estrutura do Banco de Dados
+
+Para o correto funcionamento do sistema de log, as seguintes tabelas devem estar presentes no banco de dados:
+
+*   **`access_tokens`**:  Armazena os tokens de acesso e os nomes de usuário associados.
+    *   `access_token` (VARCHAR, PRIMARY KEY)
+    *   `username` (VARCHAR)
+*   **`log_reference`**:  Armazena a referência às entidades modificadas.
+    *   `id` (SERIAL PRIMARY KEY)
+    *   `reference_id` (INT)
+    *   `table_name` (VARCHAR)
+*   **`system_logs`**:  Armazena os logs das ações realizadas.
+    *   `id` (SERIAL PRIMARY KEY)
+    *   `username` (VARCHAR)
+    *   `log_reference_id` (INT, FOREIGN KEY referencing `log_reference`.`id`)
+    *   `action` (TEXT)
+
+## Considerações de Segurança
+
+*   É crucial garantir a segurança dos tokens de acesso.  Os tokens devem ser armazenados e transmitidos de forma segura.
+*   As descrições das ações (`action`) devem ser cuidadosamente elaboradas para evitar a inclusão de informações sensíveis.
 *   O acesso às tabelas de log deve ser restrito a usuários autorizados.
+
+## Possíveis Melhorias
+
+*   Implementar um sistema de paginação para a visualização dos logs.
+*   Adicionar filtros de pesquisa para facilitar a busca por logs específicos.
+*   Implementar um sistema de alertas para notificar administradores sobre eventos críticos.
+*   Considerar a utilização de um sistema de log mais robusto, como o ELK Stack (Elasticsearch, Logstash, Kibana), para ambientes de produção com alto volume de logs.
 
 
 
 # Documentação Técnica: MedicoController
 
-Este documento descreve o `MedicoController`, um componente crucial da API para gerenciamento de médicos. Ele expõe endpoints para cadastrar, listar, atualizar, deletar e detalhar informações sobre médicos.
+Este documento descreve o funcionamento do `MedicoController`, responsável por gerenciar as operações relacionadas a médicos na API. O controller expõe endpoints para cadastrar, listar, atualizar, detalhar e excluir informações de médicos.
 
 ## Visão Geral
 
-O `MedicoController` é um controlador REST que utiliza o Spring Framework para manipular requisições HTTP relacionadas a entidades `Medico`. Ele interage com o `MedicoRepository` para persistir e recuperar dados do banco de dados. A API é protegida por autenticação via token JWT, conforme definido pela anotação `@SecurityRequirement(name = "bearer-key")`.
+O `MedicoController` utiliza as seguintes tecnologias e padrões:
 
-## Código-Fonte Relevante
+*   **Spring Boot:** Framework para construção de aplicações Java.
+*   **Spring Data JPA:** Facilita o acesso e a persistência de dados no banco de dados.
+*   **REST API:** Arquitetura para comunicação entre o cliente e o servidor.
+*   **DTOs (Data Transfer Objects):** Objetos para transportar dados entre as camadas da aplicação.
+*   **Bean Validation (Jakarta Validation):** Para validar os dados de entrada.
+*   **Swagger (OpenAPI):** Para documentação da API.
+
+## Código-fonte Relevante
 
 ```java
 package med.voll.api.controller;
@@ -361,107 +318,175 @@ public class MedicoController {
 
 ## Endpoints
 
-A tabela a seguir descreve os endpoints expostos pelo `MedicoController`:
+A seguir, uma descrição detalhada de cada endpoint do `MedicoController`.
 
-| Método HTTP | Endpoint      | Descrição                                                                                                                            | Request Body               | Response Body                                |
-|-------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|----------------------------------------------|
-| POST        | `/medicos`    | Cadastra um novo médico.                                                                                                              | `DadosCadastroMedico`        | `DadosDetalhamentoMedico`                    |
-| GET         | `/medicos`    | Lista médicos ativos de forma paginada.                                                                                                | N/A                         | `Page<DadosListagemMedico>`                   |
-| PUT         | `/medicos`    | Atualiza as informações de um médico existente.                                                                                          | `DadosAtualizacaoMedico`       | `DadosDetalhamentoMedico`                    |
-| DELETE      | `/medicos/{id}`| Exclui um médico (marca como inativo).                                                                                             | N/A                         | `ResponseEntity.noContent()`                 |
-| GET         | `/medicos/{id}`| Detalha as informações de um médico específico.                                                                                          | N/A                         | `DadosDetalhamentoMedico`                    |
+### 1. Cadastrar Médico (`POST /medicos`)
 
-### DadosCadastroMedico
+Este endpoint permite cadastrar um novo médico no sistema.
 
-Estrutura de dados utilizada no corpo da requisição para cadastrar um novo médico.
+*   **Método:** `POST`
+*   **URL:** `/medicos`
+*   **Request Body:** `DadosCadastroMedico` (JSON)
+*   **Response:**
+    *   `201 Created`: Médico cadastrado com sucesso. Retorna um `DadosDetalhamentoMedico` no corpo da resposta e o header `Location` com a URL do novo recurso.
+    *   `400 Bad Request`: Erro de validação nos dados de entrada.
 
-| Atributo       | Tipo      | Descrição                                                                      | Validação                                |
-|----------------|-----------|--------------------------------------------------------------------------------|------------------------------------------|
-| nome           | String    | Nome completo do médico.                                                         | `@NotBlank`                               |
-| email          | String    | Endereço de email do médico.                                                      | `@NotBlank`, `@Email`                     |
-| telefone       | String    | Número de telefone do médico.                                                   | `@NotBlank`                               |
-| crm            | String    | Número do CRM (Conselho Regional de Medicina) do médico.                        | `@NotBlank`, Validação específica (ex: único) |
-| especialidade  | Especialidade | Especialidade médica do médico (enum).                                             | `@NotNull`                                |
-| endereco       | DadosEndereco | Objeto contendo informações sobre o endereço do médico.                            | `@Valid`                                  |
+**Request Body (`DadosCadastroMedico`)**
 
-### DadosEndereco
+| Atributo       | Tipo    | Descrição                                  | Validação                                  |
+|----------------|---------|--------------------------------------------|---------------------------------------------|
+| nome           | String  | Nome completo do médico.                   | Obrigatório, não pode ser vazio.          |
+| email          | String  | Endereço de e-mail do médico.              | Obrigatório, deve ser um e-mail válido.     |
+| crm            | String  | CRM do médico.                             | Obrigatório, deve seguir um padrão específico. |
+| especialidade  | Enum    | Especialidade do médico.                   | Obrigatório, deve ser um valor válido do Enum `Especialidade`. |
+| endereco       | Objeto  | Endereço do médico (ver tabela abaixo).   | Obrigatório, todos os campos devem ser válidos. |
 
-Estrutura de dados que representa o endereço do médico.
+**Request Body (`Endereco`)**
 
-| Atributo   | Tipo     | Descrição                               | Validação            |
-|------------|----------|-------------------------------------------|-----------------------|
-| logradouro | String   | Rua ou avenida do endereço.              | `@NotBlank`           |
-| numero     | String   | Número do endereço.                      | `@NotBlank`           |
-| complemento| String   | Complemento do endereço (opcional).      | N/A                   |
-| bairro     | String   | Bairro do endereço.                      | `@NotBlank`           |
-| cidade     | String   | Cidade do endereço.                      | `@NotBlank`           |
-| uf         | String   | Unidade Federativa (UF) do endereço.     | `@NotBlank`, Tamanho 2 |
-| cep        | String   | Código de Endereçamento Postal (CEP).     | `@NotBlank`           |
+| Atributo    | Tipo    | Descrição                                  | Validação                                  |
+|-------------|---------|--------------------------------------------|---------------------------------------------|
+| logradouro  | String  | Logradouro do endereço.                    | Obrigatório, não pode ser vazio.          |
+| bairro      | String  | Bairro do endereço.                        | Obrigatório, não pode ser vazio.          |
+| cep         | String  | CEP do endereço.                           | Obrigatório, deve seguir um padrão específico. |
+| cidade      | String  | Cidade do endereço.                        | Obrigatório, não pode ser vazio.          |
+| uf          | String  | Unidade Federativa do endereço.            | Obrigatório, deve ser uma UF válida.       |
+| numero      | String  | Número do endereço.                        | Obrigatório, não pode ser vazio.          |
+| complemento | String  | Complemento do endereço (opcional).        | Opcional.                                   |
 
-### DadosListagemMedico
+**Response Body (`DadosDetalhamentoMedico`)**
 
-Estrutura de dados utilizada para listar médicos, retornada no endpoint GET `/medicos`.
+| Atributo       | Tipo    | Descrição                                  |
+|----------------|---------|--------------------------------------------|
+| id             | Long    | ID do médico.                              |
+| nome           | String  | Nome completo do médico.                   |
+| email          | String  | Endereço de e-mail do médico.              |
+| crm            | String  | CRM do médico.                             |
+| especialidade  | Enum    | Especialidade do médico.                   |
+| endereco       | Objeto  | Endereço do médico.                         |
 
-| Atributo      | Tipo      | Descrição                                       |
-|---------------|-----------|-------------------------------------------------|
-| id            | Long      | ID do médico.                                   |
-| nome          | String    | Nome do médico.                                  |
-| email         | String    | Email do médico.                                 |
-| crm           | String    | CRM do médico.                                   |
-| especialidade | Especialidade | Especialidade do médico.                          |
+**Exemplo de Requisição (JSON):**
 
-### DadosAtualizacaoMedico
+```json
+{
+  "nome": "Dr. João Silva",
+  "email": "joao.silva@voll.med",
+  "crm": "123456",
+  "especialidade": "CARDIOLOGIA",
+  "endereco": {
+    "logradouro": "Rua das Flores",
+    "bairro": "Jardim",
+    "cep": "12345678",
+    "cidade": "São Paulo",
+    "uf": "SP",
+    "numero": "123",
+    "complemento": "Apto 101"
+  }
+}
+```
 
-Estrutura de dados utilizada para atualizar as informações de um médico existente.
+### 2. Listar Médicos (`GET /medicos`)
 
-| Atributo   | Tipo     | Descrição                                                                     | Validação      |
-|------------|----------|-------------------------------------------------------------------------------|-----------------|
-| id         | Long     | ID do médico a ser atualizado.                                                | `@NotNull`      |
-| nome       | String   | Novo nome do médico (opcional).                                               | N/A             |
-| telefone   | String   | Novo número de telefone do médico (opcional).                                 | N/A             |
-| endereco   | DadosEndereco | Novas informações de endereço do médico (opcional).                         | `@Valid`        |
+Este endpoint permite listar os médicos cadastrados no sistema, com suporte a paginação e ordenação.
 
-### DadosDetalhamentoMedico
+*   **Método:** `GET`
+*   **URL:** `/medicos`
+*   **Query Parameters:**
+    *   `page`: Número da página (padrão: 0).
+    *   `size`: Tamanho da página (padrão: 10).
+    *   `sort`: Critério de ordenação (padrão: "nome").
+    *   `direction`: Direção da ordenação (padrão: ASC).
+*   **Response:**
+    *   `200 OK`: Lista de médicos paginada. Retorna um `Page<DadosListagemMedico>` no corpo da resposta.
 
-Estrutura de dados retornada para detalhar as informações de um médico específico (GET `/medicos/{id}`).
+**Response Body (`DadosListagemMedico`)**
 
-| Atributo       | Tipo      | Descrição                                                                      |
-|----------------|-----------|--------------------------------------------------------------------------------|
-| id             | Long      | ID do médico.                                                                 |
-| nome           | String    | Nome completo do médico.                                                         |
-| email          | String    | Endereço de email do médico.                                                      |
-| telefone       | String    | Número de telefone do médico.                                                   |
-| crm            | String    | Número do CRM (Conselho Regional de Medicina) do médico.                        |
-| especialidade  | Especialidade | Especialidade médica do médico (enum).                                             |
-| endereco       | DadosEndereco | Objeto contendo informações sobre o endereço do médico.                            |
-| ativo          | Boolean   | Indica se o médico está ativo (true) ou inativo (false).                       |
+| Atributo       | Tipo    | Descrição                                  |
+|----------------|---------|--------------------------------------------|
+| id             | Long    | ID do médico.                              |
+| nome           | String  | Nome completo do médico.                   |
+| email          | String  | Endereço de e-mail do médico.              |
+| crm            | String  | CRM do médico.                             |
+| especialidade  | Enum    | Especialidade do médico.                   |
 
-## Detalhes dos Métodos
+**Exemplo de Requisição:**
 
-### `cadastrar`
+`/medicos?page=0&size=20&sort=nome,asc`
 
-Este método recebe um objeto `DadosCadastroMedico` no corpo da requisição, cria uma nova instância de `Medico` com base nesses dados, e salva o médico no banco de dados através do `MedicoRepository`.  Ele retorna um `ResponseEntity` com status `201 Created` e um cabeçalho `Location` contendo a URI do novo médico criado. O corpo da resposta contém um objeto `DadosDetalhamentoMedico` com as informações detalhadas do médico criado.
+### 3. Atualizar Médico (`PUT /medicos`)
 
-### `listar`
+Este endpoint permite atualizar as informações de um médico existente.
 
-Este método retorna uma lista paginada de médicos ativos.  Ele utiliza o `MedicoRepository` para buscar todos os médicos com o atributo `ativo` igual a `true`. A paginação é configurada através do objeto `Pageable`, que pode ser customizado através dos parâmetros da requisição (ex: `size`, `page`, `sort`).  O resultado é mapeado para uma lista de objetos `DadosListagemMedico` e retornado em um `ResponseEntity` com status `200 OK`.
+*   **Método:** `PUT`
+*   **URL:** `/medicos`
+*   **Request Body:** `DadosAtualizacaoMedico` (JSON)
+*   **Response:**
+    *   `200 OK`: Médico atualizado com sucesso. Retorna um `DadosDetalhamentoMedico` no corpo da resposta.
+    *   `400 Bad Request`: Erro de validação nos dados de entrada.
+    *   `404 Not Found`: Médico não encontrado.
 
-### `atualizar`
+**Request Body (`DadosAtualizacaoMedico`)**
 
-Este método recebe um objeto `DadosAtualizacaoMedico` no corpo da requisição e atualiza as informações de um médico existente. Ele busca o médico pelo ID através do `MedicoRepository`, atualiza seus atributos com base nos dados recebidos, e retorna um `ResponseEntity` com status `200 OK` e um objeto `DadosDetalhamentoMedico` com as informações atualizadas do médico.
+| Atributo       | Tipo    | Descrição                                  | Validação                                  |
+|----------------|---------|--------------------------------------------|---------------------------------------------|
+| id             | Long    | ID do médico a ser atualizado.             | Obrigatório.                               |
+| nome           | String  | Nome completo do médico (opcional).        | Opcional.                                   |
+| email          | String  | Endereço de e-mail do médico (opcional).   | Opcional, deve ser um e-mail válido.         |
+| crm            | String  | CRM do médico (opcional).                  | Opcional, deve seguir um padrão específico. |
+| endereco       | Objeto  | Endereço do médico (opcional, ver tabela abaixo).   | Opcional, todos os campos devem ser válidos. |
 
-### `deletar`
+**Exemplo de Requisição (JSON):**
 
-Este método recebe o ID de um médico como parâmetro na URL e marca o médico como inativo no banco de dados.  Ele busca o médico pelo ID através do `MedicoRepository` e chama o método `excluir()` para atualizar o atributo `ativo` para `false`.  Retorna um `ResponseEntity` com status `204 No Content`.
+```json
+{
+  "id": 1,
+  "nome": "Dr. João Silva Atualizado",
+  "endereco": {
+    "logradouro": "Nova Rua das Flores",
+    "numero": "456"
+  }
+}
+```
 
-### `detalhar`
+### 4. Excluir Médico (`DELETE /medicos/{id}`)
 
-Este método recebe o ID de um médico como parâmetro na URL e retorna as informações detalhadas do médico. Ele busca o médico pelo ID através do `MedicoRepository` e retorna um `ResponseEntity` com status `200 OK` e um objeto `DadosDetalhamentoMedico` com as informações detalhadas do médico.
+Este endpoint permite desativar um médico existente. A exclusão é lógica, ou seja, o médico não é removido do banco de dados, mas seu status é alterado para inativo.
 
-## Considerações Adicionais
+*   **Método:** `DELETE`
+*   **URL:** `/medicos/{id}`
+*   **Path Variable:**
+    *   `id`: ID do médico a ser excluído.
+*   **Response:**
+    *   `204 No Content`: Médico excluído com sucesso.
+    *   `404 Not Found`: Médico não encontrado.
 
-*   **Validação:**  O uso da anotação `@Valid` garante que os dados recebidos nas requisições sejam validados de acordo com as restrições definidas nas classes de DTO (Data Transfer Object).
-*   **Transacionalidade:** A anotação `@Transactional` garante que as operações de banco de dados sejam executadas dentro de uma transação, garantindo a consistência dos dados.
-*   **Segurança:**  A API é protegida por autenticação via token JWT, garantindo que apenas usuários autorizados possam acessar os endpoints.
+**Exemplo de Requisição:**
 
-Este documento fornece uma visão geral do `MedicoController` e seus endpoints. Ele deve ser usado como referência para entender o funcionamento do componente e como interagir com ele.
+`/medicos/1`
+
+### 5. Detalhar Médico (`GET /medicos/{id}`)
+
+Este endpoint permite obter os detalhes de um médico específico.
+
+*   **Método:** `GET`
+*   **URL:** `/medicos/{id}`
+*   **Path Variable:**
+    *   `id`: ID do médico a ser detalhado.
+*   **Response:**
+    *   `200 OK`: Detalhes do médico. Retorna um `DadosDetalhamentoMedico` no corpo da resposta.
+    *   `404 Not Found`: Médico não encontrado.
+
+**Exemplo de Requisição:**
+
+`/medicos/1`
+
+## Autenticação
+
+Todos os endpoints do `MedicoController` requerem autenticação via Bearer Token.  A anotação `@SecurityRequirement(name = "bearer-key")` indica essa exigência.
+
+## Tratamento de Exceções
+
+O `MedicoController` não implementa tratamento de exceções diretamente.  Espera-se que um handler global capture exceções e retorne respostas de erro apropriadas.
+
+## Considerações Finais
+
+Este documento fornece uma visão geral abrangente do `MedicoController` e seus endpoints. Ele deve ser usado como referência para entender o funcionamento da API e como interagir com ela.
